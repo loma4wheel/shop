@@ -689,6 +689,65 @@ width:100%;
 .cart.open{
   right:0;
 }
+
+
+.cart-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  color: white;
+  font-size: 20px;
+  border: none;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.cart-float:active {
+  transform: scale(0.95);
+}
+
+   .cart-float {
+  pointer-events: auto;
+}
+
+#cart-count {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  background: black;
+  color: white;
+  font-size: 12px;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+   body {
+  overflow-x: hidden;
+}
+
+/* Oculta scrollbar pero mantiene scroll */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+   
+   
    
 </style>
 
@@ -877,7 +936,14 @@ class="cart-overlay"
 id="cartOverlay"
 ></div>
 
+   
 <!-- CARRITO -->
+
+   <button id="cart-float-btn" class="cart-float">
+  🛒 <span id="cart-count">0</span>
+</button>
+
+   
 
 <aside class="cart" id="cart">
 
