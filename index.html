@@ -654,32 +654,6 @@ function cerrarCheckout(){
 
 });
 
-  <div class="modal" id="checkoutModal">
-  <div class="modal-content">
-
-    <div class="modal-header">
-      <h2>Datos de entrega</h2>
-    </div>
-
-    <div class="modal-body">
-      <form id="checkoutForm">
-
-        <input type="text" id="nombre" placeholder="Nombre" required>
-        <input type="tel" id="telefono" placeholder="Teléfono" required>
-        <input type="text" id="direccion" placeholder="Dirección" required>
-
-      </form>
-    </div>
-
-    <div class="modal-footer">
-      <button class="checkout-btn" id="confirmOrder">
-        Confirmar pedido
-      </button>
-    </div>
-
-  </div>
-</div>
-
 /* =========================
    CAMBIAR CANTIDAD
 ========================= */
@@ -768,52 +742,6 @@ function cargarCarrito(){
 
 function money(v){
   return Number(v||0).toLocaleString("es-DO");
-}
-
-  document.getElementById("confirmOrder")
-.addEventListener("click", confirmarPedido);
-
-function confirmarPedido(){
-
-  const nombre = document.getElementById("nombre").value;
-  const telefono = document.getElementById("telefono").value;
-  const direccion = document.getElementById("direccion").value;
-
-  if(!nombre || !telefono || !direccion){
-    alert("Completa todos los campos");
-    return;
-  }
-
-  let mensaje = `🛒 *NUEVO PEDIDO GREY'S COLLECTION*\n\n`;
-
-  mensaje += `👤 Nombre: ${nombre}\n`;
-  mensaje += `📞 Tel: ${telefono}\n`;
-  mensaje += `📍 Dirección: ${direccion}\n\n`;
-
-  mensaje += `🧾 PRODUCTOS:\n`;
-
-  let total = 0;
-
-  carrito.forEach(item => {
-    mensaje += `- ${item.nombre} x${item.cantidad} = RD$${item.precio * item.cantidad}\n`;
-    total += item.precio * item.cantidad;
-  });
-
-  mensaje += `\n💰 TOTAL: RD$${total}`;
-
-  // enviar a WhatsApp
-  const url = `https://wa.me/${WHATSAPP_TIENDA}?text=${encodeURIComponent(mensaje)}`;
-
-  window.open(url, "_blank");
-
-  // enviar a backend
-  enviarGoogleSheets(nombre, telefono, direccion, carrito, total);
-
-  // limpiar
-  carrito = [];
-  renderCarrito();
-  document.getElementById("checkoutModal").classList.remove("active");
-
 }
 
 </script>
