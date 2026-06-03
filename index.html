@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -9,13 +10,85 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
+
+/* =========================
+   BASE
+========================= */
+
 body{
-  font-family:Inter,sans-serif;
   margin:0;
+  font-family:Inter,sans-serif;
   background:#eaeded;
 }
 
-/* ================= CART FLOAT ================= */
+/* =========================
+   HEADER SIMPLE (tu estilo base)
+========================= */
+
+.header{
+  background:#131921;
+  color:white;
+  padding:15px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:0 15px;
+}
+
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  font-weight:900;
+  font-size:22px;
+}
+
+.logo span{
+  color:#f0c14b;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+  background:linear-gradient(135deg,#232f3e,#131921);
+  color:white;
+  padding:50px 20px;
+}
+
+.hero h1{
+  font-size:40px;
+}
+
+/* =========================
+   PRODUCTOS
+========================= */
+
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:15px;
+  padding:20px;
+}
+
+.product{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+}
+
+/* =========================
+   CART FLOAT
+========================= */
 
 .cart-float{
   position:fixed;
@@ -36,17 +109,18 @@ body{
   top:5px;
   right:8px;
   background:black;
-  color:white;
-  font-size:12px;
   width:18px;
   height:18px;
   border-radius:50%;
+  font-size:12px;
   display:flex;
   justify-content:center;
   align-items:center;
 }
 
-/* ================= CART ================= */
+/* =========================
+   CART PANEL
+========================= */
 
 .cart{
   position:fixed;
@@ -55,10 +129,9 @@ body{
   width:320px;
   height:100%;
   background:white;
-  box-shadow:-5px 0 20px rgba(0,0,0,.2);
   transform:translateX(100%);
   transition:.3s;
-  z-index:9998;
+  z-index:2000;
   display:flex;
   flex-direction:column;
 }
@@ -92,20 +165,75 @@ body{
   border-top:1px solid #ddd;
 }
 
+/* =========================
+   BUTTONS
+========================= */
+
 button{
   cursor:pointer;
 }
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  background:#111;
+  color:white;
+  padding:10px 15px;
+  border-radius:8px;
+  opacity:0;
+  transition:.3s;
+}
+
+.toast.show{
+  opacity:1;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<!-- BOTÓN FLOTANTE -->
+<!-- ================= HEADER ================= -->
+<div class="header">
+  <div class="container header-top">
+    <div class="logo">Grey's <span>Collection</span></div>
+  </div>
+</div>
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="container">
+    <h1>Moda y estilo</h1>
+  </div>
+</div>
+
+<!-- ================= PRODUCTOS ================= -->
+<div class="products-grid">
+
+  <div class="product">
+    <h3>Producto 1</h3>
+    <button onclick="agregarCarrito(1)">Agregar</button>
+  </div>
+
+  <div class="product">
+    <h3>Producto 2</h3>
+    <button onclick="agregarCarrito(2)">Agregar</button>
+  </div>
+
+</div>
+
+<!-- ================= FLOAT CART ================= -->
 <button id="cart-float-btn" class="cart-float">
   🛒 <span id="cart-count">0</span>
 </button>
 
-<!-- CARRITO -->
+<!-- ================= CART ================= -->
 <aside class="cart" id="cart">
 
   <div class="cart-header">
@@ -114,7 +242,7 @@ button{
   </div>
 
   <div class="cart-items" id="cartItems">
-    <p style="text-align:center;color:#666;">Vacío</p>
+    <p style="text-align:center">Vacío</p>
   </div>
 
   <div class="cart-footer">
@@ -125,26 +253,21 @@ button{
 
 </aside>
 
-<!-- EJEMPLO PRODUCTOS -->
-<div style="padding:20px;">
-  <h2>Productos</h2>
-
-  <button onclick="agregarCarrito(1)">Agregar Producto 1</button>
-  <button onclick="agregarCarrito(2)">Agregar Producto 2</button>
-</div>
+<!-- ================= TOAST ================= -->
+<div class="toast" id="toast"></div>
 
 <script>
 
 /* ================= DATA ================= */
 
 let productos = [
-  {id:1,nombre:"Camiseta Nike",precio:1200,stock:10},
-  {id:2,nombre:"Zapatos Adidas",precio:3500,stock:5}
+  {id:1,nombre:"Producto 1",precio:1200,stock:10},
+  {id:2,nombre:"Producto 2",precio:2500,stock:5}
 ];
 
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-/* ================= CART TOGGLE ================= */
+/* ================= CART ================= */
 
 function toggleCart(){
   document.getElementById("cart").classList.toggle("open");
@@ -152,7 +275,7 @@ function toggleCart(){
 
 /* ================= SAVE ================= */
 
-function guardar(){
+function save(){
   localStorage.setItem("carrito",JSON.stringify(carrito));
 }
 
@@ -179,11 +302,11 @@ function agregarCarrito(id){
     });
   }
 
-  guardar();
+  save();
   render();
 }
 
-/* ================= REMOVE / CHANGE ================= */
+/* ================= CHANGE ================= */
 
 function cambiarCantidad(id,c){
 
@@ -199,7 +322,7 @@ function cambiarCantidad(id,c){
     item.subtotal = item.precio * nueva;
   }
 
-  guardar();
+  save();
   render();
 }
 
@@ -208,7 +331,7 @@ function cambiarCantidad(id,c){
 function render(){
 
   const box = document.getElementById("cartItems");
-  const count = document.getElementById("cart-count");
+  const badge = document.getElementById("cart-count");
 
   let total = 0;
   let qty = 0;
@@ -217,7 +340,7 @@ function render(){
 
   if(carrito.length===0){
     box.innerHTML = "<p style='text-align:center'>Vacío</p>";
-    count.textContent = 0;
+    badge.textContent = 0;
     return;
   }
 
@@ -239,7 +362,7 @@ function render(){
     `;
   });
 
-  count.textContent = qty;
+  badge.textContent = qty;
 }
 
 /* ================= FINALIZAR ================= */
@@ -251,11 +374,11 @@ function finalizarCompra(){
   alert("Compra finalizada ✔");
 
   carrito = [];
-  guardar();
+  save();
   render();
 }
 
-/* ================= CLICK FLOAT ================= */
+/* ================= FLOAT CLICK ================= */
 
 document.getElementById("cart-float-btn")
 .addEventListener("click",toggleCart);
