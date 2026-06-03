@@ -6,27 +6,14 @@
 
 <title>Grey's Collection | Tienda Online</title>
 
-<meta name="theme-color" content="#131921">
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 <style>
 
 /* =========================
-   VARIABLES
+   FIX GLOBAL (LINEA NEGRA MOBILE)
 ========================= */
-:root{
-  --bg:#eaeded;
-  --dark:#131921;
-  --dark2:#232f3e;
-  --accent:#f0c14b;
-  --accent2:#ddb347;
-  --white:#fff;
-  --text:#111;
-  --radius:12px;
-  --shadow:0 4px 15px rgba(0,0,0,.1);
-}
 
 *{
   margin:0;
@@ -35,14 +22,27 @@
   font-family:'Inter',sans-serif;
 }
 
-body{
-  background:var(--bg);
+html,body{
+  width:100%;
   overflow-x:hidden;
+  background:#eaeded;
+}
+
+/* =========================
+   VARIABLES
+========================= */
+
+:root{
+  --dark:#131921;
+  --dark2:#232f3e;
+  --accent:#f0c14b;
+  --accent2:#ddb347;
 }
 
 /* =========================
    HEADER
 ========================= */
+
 header{
   background:var(--dark);
   color:white;
@@ -54,21 +54,18 @@ header{
 .header-container{
   max-width:1400px;
   margin:auto;
-  padding:15px 20px;
+  padding:15px;
   display:flex;
   align-items:center;
-  gap:20px;
+  gap:15px;
 }
 
 .logo{
-  font-size:26px;
   font-weight:900;
-  white-space:nowrap;
+  font-size:22px;
 }
 
-.logo span{
-  color:var(--accent);
-}
+.logo span{ color:var(--accent); }
 
 .search{
   flex:1;
@@ -77,56 +74,25 @@ header{
 
 .search input{
   flex:1;
-  padding:12px;
+  padding:10px;
   border:none;
   outline:none;
 }
 
 .search button{
-  width:50px;
+  width:45px;
   border:none;
   background:var(--accent);
-  cursor:pointer;
-}
-
-.search button:hover{
-  background:var(--accent2);
-}
-
-.actions{
-  display:flex;
-  gap:20px;
-  align-items:center;
-}
-
-.cart{
-  position:relative;
-  cursor:pointer;
-  font-size:22px;
-}
-
-.cart span{
-  position:absolute;
-  top:-8px;
-  right:-10px;
-  background:red;
-  color:white;
-  font-size:11px;
-  width:18px;
-  height:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
 }
 
 /* =========================
    HERO
 ========================= */
+
 .hero{
-  background:linear-gradient(135deg,#232f3e,#131921);
+  background:linear-gradient(135deg,var(--dark2),var(--dark));
   color:white;
-  padding:60px 20px;
+  padding:50px 15px;
 }
 
 .hero-container{
@@ -134,32 +100,13 @@ header{
   margin:auto;
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:40px;
-  align-items:center;
-}
-
-.hero h1{
-  font-size:48px;
-}
-
-.hero p{
-  margin:15px 0;
-  opacity:.9;
-}
-
-.btn{
-  display:inline-block;
-  padding:12px 25px;
-  background:var(--accent);
-  color:black;
-  font-weight:700;
-  border-radius:8px;
-  text-decoration:none;
+  gap:30px;
 }
 
 /* =========================
-   CATEGORÍAS
+   CATEGORIAS
 ========================= */
+
 .categories{
   background:white;
   padding:10px;
@@ -176,66 +123,48 @@ header{
   border:none;
   border-radius:20px;
   background:#eee;
-  cursor:pointer;
-  white-space:nowrap;
 }
 
 /* =========================
    PRODUCTOS
 ========================= */
+
 .container{
   max-width:1400px;
   margin:auto;
-  padding:20px;
+  padding:15px;
 }
 
 .products{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:20px;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:15px;
 }
 
 .card{
   background:white;
-  border-radius:var(--radius);
+  border-radius:12px;
   overflow:hidden;
-  box-shadow:var(--shadow);
-  transition:.2s;
-}
-
-.card:hover{
-  transform:translateY(-5px);
 }
 
 .card img{
   width:100%;
-  height:220px;
+  height:200px;
   object-fit:cover;
 }
 
 .card-body{
-  padding:15px;
+  padding:10px;
 }
 
 .price{
-  font-size:20px;
-  font-weight:800;
-  margin-top:10px;
-}
-
-.add{
-  margin-top:10px;
-  width:100%;
-  padding:10px;
-  border:none;
-  background:var(--accent);
-  font-weight:700;
-  cursor:pointer;
+  font-weight:900;
 }
 
 /* =========================
    CART FLOAT
 ========================= */
+
 .cart-float{
   position:fixed;
   bottom:20px;
@@ -248,19 +177,22 @@ header{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:20px;
+  cursor:pointer;
+  z-index:9999;
 }
 
-/* FIX MOBILE + PANEL */
+/* =========================
+   CART PANEL FIX MOBILE
+========================= */
+
 .cart-panel{
   position:fixed;
   top:0;
   right:-420px;
   width:420px;
   max-width:100%;
-  height:100dvh; /* 🔥 FIX LINEA NEGRA */
+  height:100dvh;
   background:white;
-  box-shadow:-5px 0 25px rgba(0,0,0,.15);
   transition:.3s;
   z-index:9999;
   display:flex;
@@ -271,90 +203,64 @@ header{
   right:0;
 }
 
-/* HEADER */
 .cart-header{
   padding:15px;
   border-bottom:1px solid #eee;
   display:flex;
   justify-content:space-between;
-  align-items:center;
 }
 
-/* BODY */
 .cart-body{
   flex:1;
   overflow-y:auto;
   padding:15px;
 }
 
-/* FOOTER FIJO */
 .cart-footer{
-  border-top:1px solid #eee;
   padding:15px;
-  background:white;
+  border-top:1px solid #eee;
 }
 
-/* TOTAL GRANDE */
 .cart-total{
-  font-size:22px;
+  font-size:20px;
   font-weight:900;
   margin-bottom:10px;
 }
 
-/* BOTON CHECKOUT */
 .checkout-btn{
   width:100%;
   padding:12px;
+  background:var(--accent);
   border:none;
-  background:#f0c14b;
   font-weight:800;
-  cursor:pointer;
-  border-radius:8px;
 }
 
-/* ITEM */
+/* =========================
+   ITEM
+========================= */
+
 .cart-item{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:12px;
-  gap:10px;
-  padding-bottom:10px;
+  margin-bottom:10px;
   border-bottom:1px solid #eee;
+  padding-bottom:10px;
 }
 
-/* BOTONES */
-.qty button{
-  width:26px;
-  height:26px;
-  border:none;
-  border-radius:50%;
-  background:#eee;
-  cursor:pointer;
-}
-
-.delete-btn{
-  border:none;
-  background:#ff4d4d;
+.delete{
+  background:red;
   color:white;
-  width:28px;
-  height:28px;
+  border:none;
+  width:25px;
+  height:25px;
   border-radius:50%;
-  cursor:pointer;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
-@media(max-width:768px){
-  .hero-container{
-    grid-template-columns:1fr;
-    text-align:center;
-  }
-
-  .hero h1{
-    font-size:32px;
-  }
+.qty button{
+  width:25px;
+  height:25px;
+  border:none;
 }
 
 </style>
@@ -362,74 +268,53 @@ header{
 
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-container">
-
-    <div class="logo">
-      Grey's <span>Collection</span>
-    </div>
+    <div class="logo">Grey's <span>Collection</span></div>
 
     <div class="search">
-      <input type="text" placeholder="Buscar productos...">
+      <input id="searchInput" placeholder="Buscar...">
       <button><i class="fa fa-search"></i></button>
     </div>
-
-    <div class="actions">
-      <div class="cart">
-        <i class="fa fa-shopping-cart"></i>
-        <span id="cartCount">0</span>
-      </div>
-    </div>
-
   </div>
 </header>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-container">
-
     <div>
-      <h1>Moda, estilo y tendencias</h1>
-      <p>Compra productos exclusivos con entrega rápida.</p>
-      <a class="btn" href="#productos">Comprar ahora</a>
+      <h1>Moda y estilo</h1>
+      <p>Compra rápido y seguro</p>
     </div>
-
-    <div>
-      <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200" style="width:100%;border-radius:15px;">
-    </div>
-
   </div>
 </section>
 
-<!-- CATEGORÍAS -->
 <section class="categories">
-  <div class="cat-list">
-    <button class="cat">Todas</button>
-  </div>
+  <div class="cat-list" id="cats"></div>
 </section>
 
-<!-- PRODUCTOS -->
 <main class="container">
-  <h2>Productos</h2>
   <div class="products" id="products"></div>
 </main>
 
-<!-- CART FLOAT -->
-<div class="cart-float">
-  🛒
+<div class="cart-float" onclick="toggleCart()">
+🛒 <span id="count">0</span>
 </div>
 
-<!-- CART PANEL -->
 <div class="cart-panel" id="cartPanel">
+
   <div class="cart-header">
     <h3>Carrito</h3>
-    <span>X</span>
+    <span onclick="toggleCart()">✕</span>
   </div>
-</div>
 
-</body>
-</html>
+  <div class="cart-body" id="cartBody"></div>
+
+  <div class="cart-footer">
+    <div class="cart-total" id="total">RD$0</div>
+    <button class="checkout-btn" onclick="abrirCheckout()">Finalizar compra</button>
+  </div>
+
+</div>
 
 <script>
 
@@ -437,373 +322,139 @@ header{
    CONFIG
 ========================= */
 
-const URL_BACKEND_GOOGLE = "https://script.google.com/macros/s/AKfycbxdJr4HGGf3Opm_jc9EVJrM8c4O9lqTCsrjUwq7WLgS7E3Q6Jb5lAau-wHfshVmar7wiA/exec";
-const WHATSAPP_TIENDA = "18298706768";
+const URL = "https://script.google.com/macros/s/AKfycbxdJr4HGGf3Opm_jc9EVJrM8c4O9lqTCsrjUwq7WLgS7E3Q6Jb5lAau-wHfshVmar7wiA/exec";
+const WHATSAPP = "18298706768";
 
 /* =========================
-   ESTADO GLOBAL LIMPIO
+   DATA
 ========================= */
 
-let productos = [];
-let productosFiltrados = [];
-let carrito = [];
-let categoriaActual = "todas";
+let productos=[];
+let carrito=[];
 
 /* =========================
-   INIT (UNA SOLA VEZ)
+   INIT
 ========================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  cargarCarrito();
-  cargarProductos();
-  eventosUI();
+document.addEventListener("DOMContentLoaded",()=>{
+  loadProducts();
 });
 
 /* =========================
-   EVENTOS UI
+   PRODUCTS
 ========================= */
 
-function eventosUI(){
+async function loadProducts(){
 
-  // carrito abrir/cerrar
-  document.querySelector(".cart").addEventListener("click", toggleCart);
+  const res = await fetch(URL);
+  productos = await res.json();
 
-  document.querySelector(".cart-float").addEventListener("click", toggleCart);
-
-  // buscador
-  const input = document.querySelector(".search input");
-  if(input){
-    input.addEventListener("input", filtrar);
-  }
-
+  renderProducts();
+  renderCats();
 }
 
-/* =========================
-   PRODUCTOS
-========================= */
+function renderProducts(){
 
-async function cargarProductos(){
+  const box=document.getElementById("products");
+  box.innerHTML="";
 
-  const cont = document.getElementById("products");
+  productos.forEach(p=>{
 
-  cont.innerHTML = "Cargando...";
-
-  try{
-
-    const res = await fetch(URL_BACKEND_GOOGLE);
-    const data = await res.json();
-
-    productos = Array.isArray(data) ? data : [];
-
-    productosFiltrados = [...productos];
-
-    renderProductos();
-    renderCategorias();
-
-  }catch(e){
-
-    cont.innerHTML = "Error cargando productos";
-    console.error(e);
-
-  }
-
-}
-
-/* =========================
-   RENDER PRODUCTOS
-========================= */
-
-function renderProductos(){
-
-  const cont = document.getElementById("products");
-
-  cont.innerHTML = "";
-
-  if(productosFiltrados.length === 0){
-    cont.innerHTML = "<p>No hay productos</p>";
-    return;
-  }
-
-  productosFiltrados.forEach(p => {
-
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `
+    box.innerHTML+=`
+    <div class="card">
       <img src="${p.imagen}">
       <div class="card-body">
-        <h3>${p.nombre}</h3>
-        <small>${p.categoria || ""}</small>
-        <div class="price">RD$ ${money(p.precio)}</div>
-
-        <button class="add">
-          Añadir
-        </button>
+        <b>${p.nombre}</b>
+        <div class="price">RD$ ${p.precio}</div>
+        <button onclick="add(${p.id})">Agregar</button>
       </div>
-    `;
-
-    div.querySelector("button").onclick = () => agregarCarrito(p.id);
-
-    cont.appendChild(div);
-
+    </div>`;
   });
-
 }
 
 /* =========================
-   CATEGORÍAS (FIX REAL)
+   CART
 ========================= */
 
-function renderCategorias(){
+function add(id){
 
-  const cont = document.querySelector(".cat-list");
-
-  cont.innerHTML = `<button class="cat active" onclick="setCat('todas')">Todas</button>`;
-
-  const cats = [...new Set(productos.map(p => p.categoria))];
-
-  cats.forEach(c => {
-
-    const btn = document.createElement("button");
-    btn.className = "cat";
-    btn.textContent = c;
-
-    btn.onclick = () => setCat(c);
-
-    cont.appendChild(btn);
-
-  });
-
-}
-
-/* =========================
-   SET CATEGORÍA (FIX)
-========================= */
-
-function setCat(cat){
-
-  categoriaActual = cat;
-
-  document.querySelectorAll(".cat").forEach(b => b.classList.remove("active"));
-
-  event.target.classList.add("active");
-
-  filtrar();
-
-}
-
-/* =========================
-   FILTRO (FIX TOTAL)
-========================= */
-
-function filtrar(){
-
-  const text = document.querySelector(".search input")?.value?.toLowerCase() || "";
-
-  productosFiltrados = productos.filter(p => {
-
-    const okCat = categoriaActual === "todas" || p.categoria === categoriaActual;
-
-    const okText =
-      p.nombre.toLowerCase().includes(text) ||
-      (p.descripcion || "").toLowerCase().includes(text);
-
-    return okCat && okText;
-
-  });
-
-  renderProductos();
-
-}
-
-/* =========================
-   CARRITO (UN SOLO SISTEMA)
-========================= */
-
-function agregarCarrito(id){
-
-  const prod = productos.find(p => String(p.id) === String(id));
-  if(!prod) return;
-
-  const item = carrito.find(p => String(p.id) === String(id));
+  let p=productos.find(x=>x.id==id);
+  let item=carrito.find(x=>x.id==id);
 
   if(item){
-    if(item.cantidad + 1 > prod.stock) return alert("Sin stock");
     item.cantidad++;
   }else{
-    carrito.push({
-      id: prod.id,
-      nombre: prod.nombre,
-      precio: Number(prod.precio),
-      imagen: prod.imagen,
-      stock: Number(prod.stock),
-      cantidad: 1
-    });
+    carrito.push({...p,cantidad:1});
   }
 
-  saveCart();
-  renderCart();
-  updateCount();
-
+  updateCart();
 }
 
-/* =========================
-   RENDER CARRITO (FIX ABRIR)
-========================= */
+function updateCart(){
 
-function renderCart(){
+  let box=document.getElementById("cartBody");
+  let count=document.getElementById("count");
+  let total=document.getElementById("total");
 
-  const panel = document.getElementById("cartPanel");
+  box.innerHTML="";
+  let t=0,c=0;
 
-  let total = 0;
+  carrito.forEach(i=>{
 
-  let html = `
-    <div class="cart-header">
-      <h3>Tu Carrito</h3>
-      <span onclick="toggleCart()" style="cursor:pointer;font-size:22px">✕</span>
-    </div>
+    t+=i.precio*i.cantidad;
+    c+=i.cantidad;
 
-    <div class="cart-body">
-  `;
-
-  if(carrito.length === 0){
-    panel.innerHTML = html + "<p style='text-align:center'>Carrito vacío</p></div>";
-    return;
-  }
-
-  carrito.forEach(item => {
-
-    total += item.precio * item.cantidad;
-
-    html += `
-      <div class="cart-item">
-
-        <div style="flex:1">
-          <b>${item.nombre}</b><br>
-          RD$ ${money(item.precio)}
-        </div>
-
-        <div class="qty">
-          <button onclick="changeQty('${item.id}',-1)">-</button>
-          ${item.cantidad}
-          <button onclick="changeQty('${item.id}',1)">+</button>
-        </div>
-
-        <button class="delete-btn" onclick="removeItem('${item.id}')">
-          🗑
-        </button>
-
+    box.innerHTML+=`
+    <div class="cart-item">
+      <div>${i.nombre}</div>
+      <div class="qty">
+        <button onclick="change(${i.id},-1)">-</button>
+        ${i.cantidad}
+        <button onclick="change(${i.id},1)">+</button>
       </div>
-    `;
-
+      <button class="delete" onclick="removeItem(${i.id})">x</button>
+    </div>`;
   });
 
-  html += `
-    </div>
-
-    <div class="cart-footer">
-
-      <div class="cart-total">
-        Total: RD$ ${money(total)}
-      </div>
-
-      <button class="checkout-btn" onclick="abrirCheckout()">
-        Finalizar compra
-      </button>
-
-    </div>
-  `;
-
-  panel.innerHTML = html;
+  count.innerText=c;
+  total.innerText="RD$"+t;
 }
 
-/* =========================
-   CAMBIAR CANTIDAD
-========================= */
-
-function changeQty(id, n){
-
-  const item = carrito.find(p => String(p.id) === String(id));
-  const prod = productos.find(p => String(p.id) === String(id));
-
-  if(!item) return;
-
-  const next = item.cantidad + n;
-
-  if(next <= 0){
-    carrito = carrito.filter(p => p.id !== id);
-  }else if(next <= prod.stock){
-    item.cantidad = next;
-  }
-
-  saveCart();
-  renderCart();
-  updateCount();
-
+function change(id,n){
+  let i=carrito.find(x=>x.id==id);
+  if(!i) return;
+  i.cantidad+=n;
+  if(i.cantidad<=0) carrito=carrito.filter(x=>x.id!=id);
+  updateCart();
 }
 
 function removeItem(id){
-
-  carrito = carrito.filter(
-    p => String(p.id) !== String(id)
-  );
-
-  saveCart();
-  renderCart();
-  updateCount();
-
+  carrito=carrito.filter(x=>x.id!=id);
+  updateCart();
 }
-
-   
-/* =========================
-   TOGGLE CART (FIX REAL)
-========================= */
 
 function toggleCart(){
-
-  const panel = document.getElementById("cartPanel");
-
-  panel.classList.toggle("open");
-
+  document.getElementById("cartPanel").classList.toggle("open");
 }
 
 /* =========================
-   CONTADOR FIX
+   CHECKOUT + WHATSAPP
 ========================= */
 
-function updateCount(){
+function abrirCheckout(){
 
-  const c = document.getElementById("cartCount");
+  let msg="Pedido:\n";
 
-  c.textContent = carrito.reduce((a,b) => a + b.cantidad, 0);
+  carrito.forEach(i=>{
+    msg+=`${i.nombre} x${i.cantidad}\n`;
+  });
 
-}
+  let url=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
 
-/* =========================
-   STORAGE FIX
-========================= */
-
-function saveCart(){
-  localStorage.setItem("cart", JSON.stringify(carrito));
-}
-
-function cargarCarrito(){
-
-  const d = localStorage.getItem("cart");
-
-  carrito = d ? JSON.parse(d) : [];
-
-  renderCart();
-  updateCount();
-
-}
-
-/* =========================
-   MONEY
-========================= */
-
-function money(v){
-  return Number(v||0).toLocaleString("es-DO");
+  window.open(url,"_blank");
 }
 
 </script>
+
+</body>
+</html>
