@@ -4,232 +4,138 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Grey's Collection | Tienda Online</title>
+<title>Grey's Collection</title>
 
-<meta name="description" content="Tienda online moderna con moda, calzado y accesorios">
-<meta name="theme-color" content="#131921">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <style>
 
-:root{
-  --primary:#131921;
-  --secondary:#232f3e;
-  --accent:#f0c14b;
-  --accent2:#ddb347;
-  --bg:#eaeded;
-  --text:#111;
-  --white:#fff;
-  --border:#ddd;
-  --radius:12px;
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Inter',sans-serif;
-}
-
 body{
-  background:var(--bg);
+  margin:0;
+  font-family:Inter;
+  background:#eaeded;
   overflow-x:hidden;
 }
 
+*{box-sizing:border-box}
+
 /* HEADER */
-.header{
-  background:var(--primary);
-  color:white;
+header{
+  background:#131921;
+  color:#fff;
+  padding:12px;
   position:sticky;
   top:0;
   z-index:999;
 }
 
-.header-top{
+.header{
   display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:15px;
   gap:10px;
-  flex-wrap:wrap;
+  align-items:center;
 }
 
 .logo{
-  font-size:22px;
   font-weight:900;
-  color:white;
+  white-space:nowrap;
 }
-.logo span{color:var(--accent);}
 
-.search-box{
+.logo span{color:#f0c14b}
+
+.search{
   flex:1;
   display:flex;
-  max-width:500px;
 }
 
-.search-box input{
-  flex:1;
+.search input{
+  width:100%;
   padding:10px;
   border:none;
   outline:none;
 }
 
-.search-box button{
-  background:var(--accent);
+.search button{
+  background:#f0c14b;
   border:none;
-  padding:10px 15px;
-  cursor:pointer;
+  padding:10px;
 }
 
-.header-actions{
-  display:flex;
-  gap:15px;
-  align-items:center;
+/* PRODUCTOS */
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:15px;
 }
 
-.cart-btn{
-  position:relative;
-  cursor:pointer;
-  font-size:22px;
-}
-
-.cart-count{
-  position:absolute;
-  top:-8px;
-  right:-10px;
-  background:red;
-  color:white;
-  font-size:12px;
-  width:18px;
-  height:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:50%;
-}
-
-/* HERO */
-.hero{
-  background:linear-gradient(135deg,#232f3e,#131921);
-  color:white;
-  padding:50px 20px;
-}
-
-.hero-grid{
+.grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-  align-items:center;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:10px;
 }
 
-.hero h1{font-size:40px;}
-.hero p{margin:10px 0;}
+.card{
+  background:#fff;
+  border-radius:10px;
+  padding:10px;
+}
 
-.hero-btn{
-  display:inline-block;
-  background:var(--accent);
-  padding:12px 20px;
-  color:black;
-  font-weight:bold;
+.card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
   border-radius:8px;
 }
 
-/* CATEGORIAS */
-.categories{
-  background:white;
-  padding:10px;
-  overflow-x:auto;
-  white-space:nowrap;
+.price{
+  font-weight:800;
 }
 
-.category-btn{
-  display:inline-block;
-  padding:8px 15px;
-  margin-right:5px;
-  border:none;
-  border-radius:20px;
-  background:#eee;
-  cursor:pointer;
-}
-
-.category-btn.active{
-  background:var(--primary);
-  color:white;
-}
-
-/* PRODUCTS */
-.products-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:15px;
-  padding:20px;
-}
-
-.product-card{
-  background:white;
-  border-radius:var(--radius);
-  overflow:hidden;
-  box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-
-.product-card img{
+.card button{
   width:100%;
-  height:180px;
-  object-fit:cover;
+  padding:8px;
+  margin-top:8px;
+  background:#f0c14b;
+  border:none;
+  font-weight:700;
 }
 
-.product-body{
-  padding:10px;
-}
-
-.product-price{
+/* CART BUTTON */
+.cart-btn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#f0c14b;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  border:none;
   font-size:20px;
-  font-weight:bold;
-}
-
-.add-btn{
-  width:100%;
-  padding:10px;
-  border:none;
-  background:var(--accent);
-  font-weight:bold;
-  cursor:pointer;
 }
 
 /* CART */
-.cart-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.5);
-  display:none;
-}
-
-.cart-overlay.active{display:block;}
-
 .cart{
   position:fixed;
-  right:-400px;
+  right:-100%;
   top:0;
-  width:350px;
-  height:100vh;
-  background:white;
+  width:100%;
+  max-width:380px;
+  height:100dvh;
+  background:#fff;
   transition:.3s;
   display:flex;
   flex-direction:column;
 }
 
-.cart.open{right:0;}
+.cart.open{right:0}
 
 .cart-header{
   padding:15px;
-  border-bottom:1px solid #eee;
+  border-bottom:1px solid #ddd;
   display:flex;
   justify-content:space-between;
 }
 
-.cart-items{
+.cart-body{
   flex:1;
   overflow:auto;
   padding:10px;
@@ -239,142 +145,95 @@ body{
   display:flex;
   justify-content:space-between;
   margin-bottom:10px;
+  border-bottom:1px solid #eee;
+  padding-bottom:10px;
 }
 
 .cart-footer{
   padding:15px;
-  border-top:1px solid #eee;
+  border-top:1px solid #ddd;
 }
 
-.checkout-btn{
+.checkout{
   width:100%;
   padding:12px;
-  background:green;
-  color:white;
+  background:#f0c14b;
   border:none;
-  font-weight:bold;
-  cursor:pointer;
+  font-weight:800;
 }
 
-/* FLOAT CART MOBILE */
-.cart-float{
+/* MODAL */
+.modal{
   position:fixed;
-  bottom:20px;
-  right:20px;
-  background:red;
-  color:white;
-  border:none;
-  width:55px;
-  height:55px;
-  border-radius:50%;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
 }
 
-/* FOOTER */
-.footer{
-  background:#131921;
-  color:white;
-  padding:40px 20px;
-  margin-top:40px;
+.modal.show{display:flex}
+
+.modal-box{
+  background:#fff;
+  padding:20px;
+  width:90%;
+  max-width:400px;
 }
 
-/* MOBILE FIX */
-@media(max-width:768px){
-  .hero-grid{
-    grid-template-columns:1fr;
-    text-align:center;
-  }
-
-  .cart{
-    width:100%;
-  }
-
-  .hero h1{
-    font-size:28px;
-  }
+input,textarea{
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
 }
 
-   html, body {
-  overflow-x: hidden;
-  max-width: 100%;
-}
-
-* {
-  max-width: 100%;
-}
-   
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <header>
-  <div class="header-container">
-
-    <div class="logo">
-      Grey's <span>Collection</span>
-    </div>
+  <div class="header">
+    <div class="logo">Grey's <span>Collection</span></div>
 
     <div class="search">
-      <input type="text" placeholder="Buscar productos...">
-      <button><i class="fa fa-search"></i></button>
+      <input id="searchInput" placeholder="Buscar productos...">
+      <button>🔍</button>
     </div>
-
-    <div class="actions">
-      <div class="cart">
-        <i class="fa fa-shopping-cart"></i>
-        <span id="cartCount">0</span>
-      </div>
-    </div>
-
   </div>
 </header>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-container">
-
-    <div>
-      <h1>Moda, estilo y tendencias</h1>
-      <p>Compra productos exclusivos con entrega rápida.</p>
-      <a class="btn" href="#productos">Comprar ahora</a>
-    </div>
-
-    <div>
-      <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200" style="width:100%;border-radius:15px;">
-    </div>
-
-  </div>
-</section>
-
-<!-- CATEGORÍAS -->
-<section class="categories">
-  <div class="cat-list">
-    <button class="cat">Todas</button>
-  </div>
-</section>
-
-<!-- PRODUCTOS -->
-<main class="container">
-  <h2>Productos</h2>
-  <div class="products" id="products"></div>
-</main>
-
-<!-- CART FLOAT -->
-<div class="cart-float">
-  🛒
+<div class="container">
+  <div id="grid" class="grid"></div>
 </div>
 
-<!-- CART PANEL -->
-<div class="cart-panel" id="cartPanel">
+<button class="cart-btn" onclick="toggleCart()">🛒 <span id="count">0</span></button>
+
+<div class="cart" id="cart">
   <div class="cart-header">
-    <h3>Carrito</h3>
-    <span>X</span>
+    <b>Carrito</b>
+    <button onclick="toggleCart()">✖</button>
+  </div>
+
+  <div class="cart-body" id="cartBody"></div>
+
+  <div class="cart-footer">
+    <h3 id="total">RD$0</h3>
+    <button class="checkout" onclick="openCheckout()">Finalizar compra</button>
   </div>
 </div>
 
-</body>
-</html>
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3>Datos de entrega</h3>
+
+    <input id="nombre" placeholder="Nombre">
+    <input id="telefono" placeholder="Teléfono">
+    <textarea id="direccion" placeholder="Dirección"></textarea>
+
+    <button onclick="sendOrder()">Confirmar pedido</button>
+  </div>
+</div>
 
 <script>
 
@@ -382,6 +241,7 @@ const URL = "https://script.google.com/macros/s/AKfycbxdJr4HGGf3Opm_jc9EVJrM8c4O
 
 let productos=[];
 let carrito=[];
+let categoria="todas";
 
 /* LOAD */
 fetch(URL).then(r=>r.json()).then(d=>{
@@ -389,75 +249,53 @@ fetch(URL).then(r=>r.json()).then(d=>{
   render();
 });
 
-
-  let searchTimeout = null;
-
-function filtrar(){
-
-  clearTimeout(searchTimeout);
-
-  searchTimeout = setTimeout(() => {
-
-    const input = document.querySelector(".search input");
-    const text = (input?.value || "").toLowerCase().trim();
-
-    productosFiltrados = productos.filter(p => {
-
-      const nombre = (p.nombre || "").toLowerCase();
-      const desc = (p.descripcion || "").toLowerCase();
-      const cat = (p.categoria || "").toLowerCase();
-
-      const okCat =
-        categoriaActual === "todas" ||
-        p.categoria === categoriaActual;
-
-      const okText =
-        nombre.includes(text) ||
-        desc.includes(text) ||
-        cat.includes(text);
-
-      return okCat && okText;
-
-    });
-
-    renderProductos();
-
-  }, 120); // 🔥 velocidad tipo Amazon (120ms)
-
-}
-
-const input = document.querySelector(".search input");
-
-input.addEventListener("input", () => {
-  requestAnimationFrame(filtrar);
-});
-
-  input.addEventListener("keydown", (e) => {
-  if(e.key === "Enter"){
-    filtrar();
-  }
-});
-
+/* RENDER */
 function render(){
-  let g=document.getElementById("grid");
+  const g=document.getElementById("grid");
   g.innerHTML="";
   productos.forEach(p=>{
     g.innerHTML+=`
-    <div class="card">
-      <img src="${p.imagen}">
-      <h4>${p.nombre}</h4>
-      <div class="price">RD$ ${p.precio}</div>
-      <button onclick="add(${p.id})">Agregar</button>
-    </div>`;
+      <div class="card">
+        <img src="${p.imagen}">
+        <h4>${p.nombre}</h4>
+        <div class="price">RD$ ${p.precio}</div>
+        <button onclick="add(${p.id})">Agregar</button>
+      </div>
+    `;
   });
 }
+
+/* SEARCH (FAST AMAZON STYLE) */
+document.getElementById("searchInput").addEventListener("input", e=>{
+  const val = e.target.value.toLowerCase();
+
+  const filtered = productos.filter(p =>
+    p.nombre.toLowerCase().includes(val) ||
+    (p.descripcion||"").toLowerCase().includes(val)
+  );
+
+  const g=document.getElementById("grid");
+  g.innerHTML="";
+  filtered.forEach(p=>{
+    g.innerHTML+=`
+      <div class="card">
+        <img src="${p.imagen}">
+        <h4>${p.nombre}</h4>
+        <div class="price">RD$ ${p.precio}</div>
+        <button onclick="add(${p.id})">Agregar</button>
+      </div>
+    `;
+  });
+});
 
 /* CART */
 function add(id){
   let p=productos.find(x=>x.id==id);
   let i=carrito.find(x=>x.id==id);
+
   if(i) i.cantidad++;
   else carrito.push({...p,cantidad:1});
+
   update();
 }
 
@@ -487,68 +325,45 @@ function openCheckout(){
   document.getElementById("modal").classList.add("show");
 }
 
-/* SEND */
+/* WHATSAPP + SHEETS */
 function sendOrder(){
 
-  let data={
-    nombre:document.getElementById("nombre").value,
-    telefono:document.getElementById("telefono").value,
-    direccion:document.getElementById("direccion").value,
-    carrito:carrito,
-    total:carrito.reduce((a,b)=>a+b.precio*b.cantidad,0)
-  };
+  const nombre=document.getElementById("nombre").value;
+  const telefono=document.getElementById("telefono").value;
+  const direccion=document.getElementById("direccion").value;
+
+  const total=carrito.reduce((a,b)=>a+b.precio*b.cantidad,0);
 
   fetch(URL,{
     method:"POST",
-    body:JSON.stringify(data)
- .then((res)=>res.json())
-.then((data)=>{
+    body:JSON.stringify({
+      nombre,telefono,direccion,carrito,total
+    })
+  }).then(r=>r.json())
+  .then(data=>{
 
-  const pedidoId = data.id || "PED-"+Date.now();
+    let msg="🛍️ Grey's Collection\n\n";
+    msg+=`Cliente: ${nombre}\n`;
+    msg+=`Tel: ${telefono}\n\n`;
 
-  // 1. Mensaje WhatsApp
-  const mensaje = generarMensajeWhatsApp(pedidoId, {
-    nombre,
-    telefono,
-    direccion,
-    carrito,
-    total: data.total || carrito.reduce((a,b)=>a+b.precio*b.cantidad,0)
+    carrito.forEach(p=>{
+      msg+=`${p.nombre} x${p.cantidad}\n`;
+    });
+
+    msg+=`\nTotal: RD$ ${total}`;
+
+    window.open(
+      `https://wa.me/18298706768?text=${encodeURIComponent(msg)}`,
+      "_blank"
+    );
+
+    carrito=[];
+    update();
+    toggleCart();
+    document.getElementById("modal").classList.remove("show");
+
   });
 
-  // 2. Abrir WhatsApp
-  const url = `https://wa.me/18298706768?text=${mensaje}`;
-  window.open(url, "_blank");
-
-  // 3. Reset carrito
-  alert("Pedido enviado correctamente");
-
-  carrito=[];
-  update();
-  document.getElementById("modal").classList.remove("show");
-
-});
-
-}
-
-  function generarMensajeWhatsApp(pedidoId, datos){
-
-  let mensaje = `🛍️ *GREY'S COLLECTION*\n`;
-  mensaje += `📦 *Pedido:* ${pedidoId}\n\n`;
-
-  mensaje += `👤 *Cliente:* ${datos.nombre}\n`;
-  mensaje += `📱 *Tel:* ${datos.telefono}\n`;
-  mensaje += `📍 *Dirección:* ${datos.direccion}\n\n`;
-
-  mensaje += `🧾 *Productos:*\n`;
-
-  datos.carrito.forEach(p => {
-    mensaje += `• ${p.nombre} x${p.cantidad} = RD$ ${p.precio * p.cantidad}\n`;
-  });
-
-  mensaje += `\n💰 *Total:* RD$ ${datos.total}\n\n`;
-  mensaje += `📌 Gracias por comprar en Grey's Collection`;
-
-  return encodeURIComponent(mensaje);
 }
 
 </script>
