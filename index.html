@@ -307,49 +307,74 @@ body{
 
 <body>
 
+<!-- HEADER -->
 <header>
-  <div class="header">
-    <div class="logo">Grey's <span>Collection</span></div>
+  <div class="header-container">
+
+    <div class="logo">
+      Grey's <span>Collection</span>
+    </div>
 
     <div class="search">
-      <input id="search" placeholder="Buscar...">
-      <button>🔍</button>
+      <input type="text" placeholder="Buscar productos...">
+      <button><i class="fa fa-search"></i></button>
     </div>
+
+    <div class="actions">
+      <div class="cart">
+        <i class="fa fa-shopping-cart"></i>
+        <span id="cartCount">0</span>
+      </div>
+    </div>
+
   </div>
 </header>
 
-<div class="container">
-  <div id="grid" class="grid"></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-container">
+
+    <div>
+      <h1>Moda, estilo y tendencias</h1>
+      <p>Compra productos exclusivos con entrega rápida.</p>
+      <a class="btn" href="#productos">Comprar ahora</a>
+    </div>
+
+    <div>
+      <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200" style="width:100%;border-radius:15px;">
+    </div>
+
+  </div>
+</section>
+
+<!-- CATEGORÍAS -->
+<section class="categories">
+  <div class="cat-list">
+    <button class="cat">Todas</button>
+  </div>
+</section>
+
+<!-- PRODUCTOS -->
+<main class="container">
+  <h2>Productos</h2>
+  <div class="products" id="products"></div>
+</main>
+
+<!-- CART FLOAT -->
+<div class="cart-float">
+  🛒
 </div>
 
-<button class="cart-btn" onclick="toggleCart()">🛒 <span id="count">0</span></button>
-
-<div class="cart" id="cart">
+<!-- CART PANEL -->
+<div class="cart-panel" id="cartPanel">
   <div class="cart-header">
-    <b>Carrito</b>
-    <button onclick="toggleCart()">✖</button>
-  </div>
-
-  <div class="cart-body" id="cartBody"></div>
-
-  <div class="cart-footer">
-    <h3 id="total">RD$0</h3>
-    <button class="checkout" onclick="openCheckout()">Finalizar compra</button>
+    <h3>Carrito</h3>
+    <span>X</span>
   </div>
 </div>
 
-<!-- CHECKOUT -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h3>Datos de entrega</h3>
-
-    <input id="nombre" placeholder="Nombre">
-    <input id="telefono" placeholder="Teléfono">
-    <textarea id="direccion" placeholder="Dirección"></textarea>
-
-    <button onclick="sendOrder()">Confirmar pedido</button>
-  </div>
-</div>
+</body>
+</html>
 
 <script>
 
