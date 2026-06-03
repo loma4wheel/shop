@@ -364,6 +364,55 @@ fetch(URL).then(r=>r.json()).then(d=>{
   render();
 });
 
+
+  let searchTimeout = null;
+
+function filtrar(){
+
+  clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+
+    const input = document.querySelector(".search input");
+    const text = (input?.value || "").toLowerCase().trim();
+
+    productosFiltrados = productos.filter(p => {
+
+      const nombre = (p.nombre || "").toLowerCase();
+      const desc = (p.descripcion || "").toLowerCase();
+      const cat = (p.categoria || "").toLowerCase();
+
+      const okCat =
+        categoriaActual === "todas" ||
+        p.categoria === categoriaActual;
+
+      const okText =
+        nombre.includes(text) ||
+        desc.includes(text) ||
+        cat.includes(text);
+
+      return okCat && okText;
+
+    });
+
+    renderProductos();
+
+  }, 120); // 🔥 velocidad tipo Amazon (120ms)
+
+}
+
+const input = document.querySelector(".search input");
+
+input.addEventListener("input", () => {
+  requestAnimationFrame(filtrar);
+});
+
+  input.addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){
+    filtrar();
+  }
+});
+
 function render(){
   let g=document.getElementById("grid");
   g.innerHTML="";
