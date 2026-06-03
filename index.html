@@ -639,6 +639,40 @@ width:100%;
 
 }
 
+/* =====================================
+   CONTADOR CARRITO
+===================================== */
+
+.cart-btn{
+  position:relative;
+  cursor:pointer;
+}
+
+.cart-count{
+
+  position:absolute;
+
+  top:-8px;
+  right:-8px;
+
+  min-width:22px;
+  height:22px;
+
+  padding:0 5px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:#e53935;
+  color:#fff;
+
+  font-size:12px;
+  font-weight:700;
+}
+   
 </style>
 
 </head>
@@ -684,8 +718,8 @@ placeholder="Buscar productos, categorías..."
 
 <i class="fa-solid fa-cart-shopping"></i>
 
-<div class="cart-count" id="cartCount">
-0
+<div class="cart-count" id="cartCount"> 0
+
 </div>
 
 </div>
@@ -828,69 +862,67 @@ id="cartOverlay"
 
 <!-- CARRITO -->
 
-<aside
-class="cart"
-id="cart"
->
+<aside class="cart" id="cart">
 
-<div class="cart-header">
+  <div class="cart-header">
 
-<h3>
-Tu Carrito
-</h3>
+    <h3>
+      Tu Carrito
+    </h3>
 
-<button
-id="closeCart"
-style="
-border:none;
-background:none;
-font-size:24px;
-"
->
-✕
-</button>
+    <button
+      id="closeCart"
+      style="
+      border:none;
+      background:none;
+      font-size:24px;
+      "
+    >
+      ✕
+    </button>
 
-</div>
+  </div>
 
-<div
-class="cart-items"
-id="cartItems"
->
+  <div
+    class="cart-items"
+    id="cartItems"
+  >
 
-<p
-style="
-text-align:center;
-padding:30px;
-color:#666;
-"
->
-Tu carrito está vacío
-</p>
+    <p
+      style="
+      text-align:center;
+      padding:30px;
+      color:#666;
+      "
+    >
+      Tu carrito está vacío
+    </p>
 
-</div>
+  </div>
 
-<div class="cart-footer">
+  <div class="cart-footer">
 
-<div class="cart-total">
+    <div class="cart-total">
 
-<span>Total</span>
+      <span>Total</span>
 
-<span id="cartTotal">
-RD$0
-</span>
+      <span id="cartTotal">
+        RD$0
+      </span>
 
-</div>
+    </div>
 
-<button
-class="checkout-btn"
-id="checkoutBtn"
->
-Finalizar Compra
-</button>
+    <button
+      class="checkout-btn"
+      id="checkoutBtn"
+    >
+      Finalizar Compra
+    </button>
 
-</div>
+  </div>
 
 </aside>
+   
 
 <div
 class="modal"
@@ -1517,6 +1549,236 @@ function renderProductos(){
   });
 
 }
+
+// ========================================
+// CARRITO
+// ========================================
+
+function agregarCarrito(idProducto){
+
+  const producto = productos.find(
+    p => String(p.id) === String(idProducto)
+  );
+
+  if(!producto){
+    return;
+  }
+
+  const item = carrito.find(
+    p => String(p.id) === String(idProducto)
+  );
+
+  if(item){
+
+    if(item.cantidad + 1 > producto.stock){
+
+      mostrarToast(
+        "No hay suficiente inventario"
+      );
+
+      return;
+    }
+
+    item.cantidad++;
+
+    item.subtotal =
+      item.cantidad *
+      item.precio;
+
+  }else{
+
+    carrito.push({
+
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: Number(producto.precio),
+      cantidad: 1,
+      stock: Number(producto.stock),
+      unidad: producto.unidad,
+
+      subtotal: Number(producto.precio)
+
+    });
+
+  }
+
+  actualizarCarrito();
+
+  mostrarToast(
+    "Producto agregado al carrito"
+  );
+
+}
+
+ function actualizarCarrito(){
+
+  const contador =
+    document.getElementById(
+      "cartCount"
+    );
+
+  const totalElemento =
+    document.getElementById(
+      "cartTotal"
+    );
+
+  let total = 0;
+  let cantidad = 0;
+
+  carrito.forEach(item=>{
+
+    total += item.subtotal;
+
+    cantidad += item.cantidad;
+
+  });
+
+  if(contador){
+
+    contador.textContent =
+      cantidad;
+
+  }
+
+  if(totalElemento){
+
+    totalElemento.textContent =
+      "RD$ " + money(total);
+
+  }
+
+  renderCarrito();
+
+}
+
+ function renderCarrito(){
+
+  const container =
+    document.getElementById(
+      "cartItems"
+    );
+
+  if(!container) return;
+
+  if(carrito.length === 0){
+
+    container.innerHTML = `
+      <p
+      style="
+      text-align:center;
+      padding:30px;
+      color:#666;
+      ">
+      Tu carrito está vacío
+      </p>
+    `;
+
+    return;
+
+  }
+
+  container.innerHTML = "";
+
+  carrito.forEach(item=>{
+
+    container.innerHTML += `
+
+      <div class="cart-item">
+
+        <div>
+
+          <strong>
+            ${item.nombre}
+          </strong>
+
+          <br>
+
+          RD$ ${money(item.precio)}
+
+        </div>
+
+        <div>
+
+          <button
+          onclick="cambiarCantidad('${item.id}',-1)">
+          -
+          </button>
+
+          <span
+          style="
+          margin:0 10px;
+          ">
+          ${item.cantidad}
+          </span>
+
+          <button
+          onclick="cambiarCantidad('${item.id}',1)">
+          +
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+  function cambiarCantidad(
+  id,
+  cambio
+){
+
+  const item =
+    carrito.find(
+      p => String(p.id) === String(id)
+    );
+
+  if(!item) return;
+
+  const producto =
+    productos.find(
+      p => String(p.id) === String(id)
+    );
+
+  const nuevaCantidad =
+    item.cantidad + cambio;
+
+  if(nuevaCantidad <= 0){
+
+    carrito =
+      carrito.filter(
+        p => String(p.id) !== String(id)
+      );
+
+  }else{
+
+    if(nuevaCantidad > producto.stock){
+
+      mostrarToast(
+        "Inventario insuficiente"
+      );
+
+      return;
+
+    }
+
+    item.cantidad =
+      nuevaCantidad;
+
+    item.subtotal =
+      item.cantidad *
+      item.precio;
+
+  }
+
+  actualizarCarrito();
+
+}
+
+   
 
 </script>
 
