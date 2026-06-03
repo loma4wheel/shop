@@ -417,22 +417,40 @@ button{cursor:pointer;border:none;font-family:var(--font-body)}
 </div>
 
 <script>
-// ── CONFIGURACIÓN — CAMBIA ESTA URL ──────────────────────────
-// Pega aquí la URL de tu Web App desplegada en Google Apps Script
+// ══════════════════════════════════════════════════════════════
+//  ÚNICA LÍNEA QUE DEBES CAMBIAR:
+//  Pega aquí la URL de tu Web App de Google Apps Script
+// ══════════════════════════════════════════════════════════════
 const API_URL = "https://script.google.com/macros/s/TU_ID_AQUI/exec";
-
-// Número WhatsApp de la tienda (con código de país, sin +)
-const WA_NUMBER = "18298706768"; // Cambia por tu número
+// ══════════════════════════════════════════════════════════════
 
 // ── ESTADO ────────────────────────────────────────────────────
-let productos = [];
-let carrito   = JSON.parse(localStorage.getItem("shopnow_cart") || "[]");
-let catActiva = "Todos";
-let busqueda  = "";
+let productos   = [];
+let categorias  = [];   // cargadas desde hoja Categorias en Sheets
+let cfg         = {};   // configuración desde hoja Config en Sheets
+let carrito     = JSON.parse(localStorage.getItem("shopnow_cart") || "[]");
+let catActiva   = "Todos";
+let busqueda    = "";
+
+// Fallbacks si la API no responde aún
+const DEMO_PRODUCTOS = [
+  {id:"PROD-001",nombre:"Laptop Pro 15",descripcion:"Intel i7, 16GB RAM, 512GB SSD",precio:850,stock:10,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400"},
+  {id:"PROD-002",nombre:"Auriculares Bluetooth",descripcion:"Noise cancelling, 30h batería",precio:120,stock:25,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"},
+  {id:"PROD-003",nombre:"Teclado Mecánico",descripcion:"RGB, switches Cherry MX Red",precio:75,stock:3,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400"},
+  {id:"PROD-004",nombre:"Silla Gaming",descripcion:"Ergonómica, reclinable 180°",precio:320,stock:8,categoria:"Muebles",imagen:"https://images.unsplash.com/photo-1606830733744-0ad4a3b7f1ef?w=400"},
+  {id:"PROD-005",nombre:"Monitor 27\" 4K",descripcion:"IPS, 144Hz, HDR400",precio:450,stock:0,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400"},
+  {id:"PROD-006",nombre:"Mouse Inalámbrico",descripcion:"DPI ajustable, 12 botones",precio:45,stock:30,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400"},
+  {id:"PROD-007",nombre:"Camiseta Premium",descripcion:"100% algodón orgánico",precio:25,stock:50,categoria:"Ropa",imagen:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400"},
+  {id:"PROD-008",nombre:"Mochila Urbana",descripcion:"35L, impermeable, USB charge port",precio:65,stock:20,categoria:"Accesorios",imagen:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400"},
+];
+const DEMO_CATS = [
+  {nombre:"Electrónica",icono:"💻"},{nombre:"Muebles",icono:"🪑"},
+  {nombre:"Ropa",icono:"👕"},{nombre:"Accesorios",icono:"🎒"}
+];
 
 // ── INIT ──────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
-  cargarProductos();
+  cargarTodo();
   renderCarrito();
   document.getElementById("search-input").addEventListener("input", e => {
     busqueda = e.target.value.toLowerCase().trim();
@@ -440,31 +458,58 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// ── API ───────────────────────────────────────────────────────
-async function cargarProductos() {
+// ── CARGA INICIAL — productos + categorías + config en 1 request
+async function cargarTodo() {
   try {
-    const res  = await fetch(API_URL + "?action=productos");
+    const res  = await fetch(API_URL);          // sin ?action = devuelve todo
     const data = await res.json();
-    productos  = Array.isArray(data) ? data : (data.productos || []);
-    renderGrid();
+
+    if (data.error) throw new Error(data.error);
+
+    productos  = data.productos  || [];
+    categorias = data.categorias || [];
+    cfg        = data.config     || {};
+
+    // Aplicar config desde Sheets
+    aplicarConfig();
     renderCategorias();
+    renderGrid();
     document.getElementById("api-dot").textContent = "✅ Conectado";
+
   } catch (e) {
-    // Demo fallback si la API aún no está configurada
-    productos = [
-      {id:"PROD-001",nombre:"Laptop Pro 15",descripcion:"Intel i7, 16GB RAM, 512GB SSD",precio:850,stock:10,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400"},
-      {id:"PROD-002",nombre:"Auriculares Bluetooth",descripcion:"Noise cancelling, 30h batería",precio:120,stock:25,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"},
-      {id:"PROD-003",nombre:"Teclado Mecánico",descripcion:"RGB, switches Cherry MX Red",precio:75,stock:3,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400"},
-      {id:"PROD-004",nombre:"Silla Gaming",descripcion:"Ergonómica, reclinable 180°",precio:320,stock:8,categoria:"Muebles",imagen:"https://images.unsplash.com/photo-1606830733744-0ad4a3b7f1ef?w=400"},
-      {id:"PROD-005",nombre:"Monitor 27\" 4K",descripcion:"IPS, 144Hz, HDR400",precio:450,stock:0,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400"},
-      {id:"PROD-006",nombre:"Mouse Inalámbrico",descripcion:"DPI ajustable, 12 botones",precio:45,stock:30,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400"},
-      {id:"PROD-007",nombre:"Camiseta Premium",descripcion:"100% algodón orgánico",precio:25,stock:50,categoria:"Ropa",imagen:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400"},
-      {id:"PROD-008",nombre:"Mochila Urbana",descripcion:"35L, impermeable, USB charge port",precio:65,stock:20,categoria:"Accesorios",imagen:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400"},
-    ];
-    renderGrid();
+    console.warn("API no disponible, usando datos demo:", e.message);
+    productos  = DEMO_PRODUCTOS;
+    categorias = DEMO_CATS;
     renderCategorias();
-    document.getElementById("api-dot").innerHTML = '<span style="color:#f59e0b">⚠️ Modo demo — configura API_URL</span>';
+    renderGrid();
+    document.getElementById("api-dot").innerHTML =
+      '<span style="color:#f59e0b">⚠️ Demo — configura API_URL</span>';
   }
+}
+
+// ── Aplicar valores de la hoja Config al frontend ─────────────
+function aplicarConfig() {
+  // Nombre de la tienda
+  const nombre = cfg["Nombre de la tienda"];
+  if (nombre) {
+    document.getElementById("logo").textContent  = nombre;
+    document.title = nombre + " — Tienda Virtual";
+  }
+  // Descripción hero
+  const desc = cfg["Descripción corta"];
+  if (desc) {
+    const heroP = document.querySelector("#hero p");
+    if (heroP) heroP.textContent = desc;
+  }
+  // Número WhatsApp (lo usa confirmarPedido)
+  // Se toma en runtime desde cfg["Número WhatsApp (sin +)"]
+}
+
+function getWA() {
+  return cfg["Número WhatsApp (sin +)"] || "18091234567";
+}
+function getSimbolo() {
+  return cfg["Símbolo moneda"] || "$";
 }
 
 // ── RENDER GRID ───────────────────────────────────────────────
@@ -476,8 +521,8 @@ function renderGrid() {
     const matchCat  = catActiva === "Todos" || p.categoria === catActiva;
     const matchBusc = !busqueda ||
       p.nombre.toLowerCase().includes(busqueda) ||
-      p.descripcion.toLowerCase().includes(busqueda) ||
-      p.categoria.toLowerCase().includes(busqueda);
+      (p.descripcion||"").toLowerCase().includes(busqueda) ||
+      (p.categoria||"").toLowerCase().includes(busqueda);
     return matchCat && matchBusc;
   });
 
@@ -489,18 +534,22 @@ function renderGrid() {
     return;
   }
 
+  const sym = getSimbolo();
   filtrados.forEach(p => {
     const enCarrito  = carrito.find(c => c.id === p.id);
     const qtyEnCart  = enCarrito ? enCarrito.qty : 0;
     const sinStock   = p.stock <= 0;
-    const stockBadge = sinStock ? "out" : p.stock <= 5 ? "low" : "ok";
-    const stockText  = sinStock ? "Sin stock" : p.stock <= 5 ? `Solo ${p.stock} quedan` : `${p.stock} disponibles`;
+    const esLow      = !sinStock && p.stock <= (p.stockMin || 5);
+    const stockBadge = sinStock ? "out" : esLow ? "low" : "ok";
+    const stockText  = sinStock ? "Sin stock" : esLow ? `Solo ${p.stock} quedan` : `${p.stock} disponibles`;
 
     const card = document.createElement("div");
     card.className = "prod-card";
     card.innerHTML = `
       <div class="prod-img-wrap">
-        <img src="${p.imagen || 'https://via.placeholder.com/400x200?text=Sin+imagen'}" alt="${p.nombre}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x200?text=Sin+imagen'"/>
+        <img src="${p.imagen || 'https://placehold.co/400x200?text=Sin+imagen'}"
+             alt="${p.nombre}" loading="lazy"
+             onerror="this.src='https://placehold.co/400x200?text=Sin+imagen'"/>
         <span class="stock-badge ${stockBadge}">${stockText}</span>
       </div>
       <div class="prod-body">
@@ -508,7 +557,7 @@ function renderGrid() {
         <p class="prod-name">${p.nombre}</p>
         <p class="prod-desc">${p.descripcion}</p>
         <div class="prod-footer">
-          <span class="prod-price">$${parseFloat(p.precio).toFixed(2)}</span>
+          <span class="prod-price">${sym}${parseFloat(p.precio).toFixed(2)}</span>
           ${sinStock
             ? `<button class="btn-add" disabled>Agotado</button>`
             : qtyEnCart > 0
@@ -525,19 +574,41 @@ function renderGrid() {
   });
 }
 
-// ── CATEGORÍAS ────────────────────────────────────────────────
+// ── CATEGORÍAS — desde hoja Categorias en Sheets ──────────────
 function renderCategorias() {
   const wrap = document.getElementById("cats-wrap");
-  wrap.innerHTML = `<button class="cat-btn ${catActiva==='Todos'?'active':''}" data-cat="Todos" onclick="filterCat('Todos',this)">Todos</button>`;
-  const cats = [...new Set(productos.map(p => p.categoria))];
-  cats.forEach(c => {
+  wrap.innerHTML = "";
+
+  // Botón "Todos"
+  const btnTodos = document.createElement("button");
+  btnTodos.className = "cat-btn" + (catActiva === "Todos" ? " active" : "");
+  btnTodos.dataset.cat = "Todos";
+  btnTodos.textContent = "🏷️ Todos";
+  btnTodos.onclick = function(){ filterCat("Todos", this) };
+  wrap.appendChild(btnTodos);
+
+  // Categorías desde Sheets (con ícono)
+  categorias.forEach(cat => {
     const btn = document.createElement("button");
-    btn.className = "cat-btn" + (catActiva === c ? " active" : "");
-    btn.dataset.cat = c;
-    btn.onclick = function(){ filterCat(c, this) };
-    btn.textContent = c;
+    btn.className = "cat-btn" + (catActiva === cat.nombre ? " active" : "");
+    btn.dataset.cat = cat.nombre;
+    btn.onclick = function(){ filterCat(cat.nombre, this) };
+    btn.textContent = (cat.icono ? cat.icono + " " : "") + cat.nombre;
     wrap.appendChild(btn);
   });
+
+  // Si no hay categorías desde Sheets, inferirlas desde productos
+  if (!categorias.length) {
+    const cats = [...new Set(productos.map(p => p.categoria).filter(Boolean))];
+    cats.forEach(c => {
+      const btn = document.createElement("button");
+      btn.className = "cat-btn" + (catActiva === c ? " active" : "");
+      btn.dataset.cat = c;
+      btn.onclick = function(){ filterCat(c, this) };
+      btn.textContent = c;
+      wrap.appendChild(btn);
+    });
+  }
 }
 
 function filterCat(cat, el) {
@@ -655,11 +726,11 @@ async function confirmarPedido() {
   const total = carrito.reduce((a, c) => a + c.precio * c.qty, 0);
   let msg = `🛒 *Nuevo Pedido — ShopNow*\n\n👤 *Cliente:* ${nombre}\n📞 *Teléfono:* ${tel}\n\n*Productos:*\n`;
   carrito.forEach(c => {
-    msg += `• ${c.nombre} x${c.qty} — $${(c.precio * c.qty).toFixed(2)}\n`;
+    msg += `• ${c.nombre} x${c.qty} — ${getSimbolo()}${(c.precio * c.qty).toFixed(2)}\n`;
   });
-  msg += `\n💰 *Total: $${total.toFixed(2)}*\n\n_Pedido realizado desde ShopNow_`;
+  msg += `\n💰 *Total: ${getSimbolo()}${total.toFixed(2)}*\n\n_Pedido realizado desde ShopNow_`;
 
-  const waURL = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  const waURL = `https://wa.me/${getWA()}?text=${encodeURIComponent(msg)}`;
   window.open(waURL, "_blank");
 
   // 3 — Limpiar carrito
@@ -694,7 +765,7 @@ async function agregarProducto() {
     if (data.success) {
       toast("✅ Producto guardado en Google Sheets");
       ["ap-nombre","ap-desc","ap-precio","ap-stock","ap-cat","ap-img"].forEach(id => document.getElementById(id).value = "");
-      cargarProductos();
+      cargarTodo();
     }
   } catch(e) {
     toast("Error al guardar. Verifica la URL de la API");
