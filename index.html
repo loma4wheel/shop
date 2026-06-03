@@ -299,14 +299,54 @@ function sendOrder(){
   fetch(URL,{
     method:"POST",
     body:JSON.stringify(data)
-  }).then(r=>r.text())
-  .then(()=>{
-    alert("Pedido enviado");
-    carrito=[];
-    update();
-    document.getElementById("modal").classList.remove("show");
+ .then((res)=>res.json())
+.then((data)=>{
+
+  const pedidoId = data.id || "PED-"+Date.now();
+
+  // 1. Mensaje WhatsApp
+  const mensaje = generarMensajeWhatsApp(pedidoId, {
+    nombre,
+    telefono,
+    direccion,
+    carrito,
+    total: data.total || carrito.reduce((a,b)=>a+b.precio*b.cantidad,0)
   });
 
+  // 2. Abrir WhatsApp
+  const url = `https://wa.me/18298706768?text=${mensaje}`;
+  window.open(url, "_blank");
+
+  // 3. Reset carrito
+  alert("Pedido enviado correctamente");
+
+  carrito=[];
+  update();
+  document.getElementById("modal").classList.remove("show");
+
+});
+
+}
+
+  function generarMensajeWhatsApp(pedidoId, datos){
+
+  let mensaje = `🛍️ *GREY'S COLLECTION*\n`;
+  mensaje += `📦 *Pedido:* ${pedidoId}\n\n`;
+
+  mensaje += `👤 *Cliente:* ${datos.nombre}\n`;
+  mensaje += `📱 *Tel:* ${datos.telefono}\n`;
+  mensaje += `📍 *Dirección:* ${datos.direccion}\n\n`;
+
+  mensaje += `🧾 *Productos:*\n`;
+
+  datos.carrito.forEach(p => {
+    mensaje += `• ${p.nombre} x${p.cantidad} = RD$ ${p.precio * p.cantidad}\n`;
+  });
+
+  mensaje += `\n💰 *Total:* RD$ ${datos.total}\n\n`;
+  mensaje += `📌 Gracias por comprar en Grey's Collection`;
+
+  return encodeURIComponent(mensaje);
 }
 
 </script>
