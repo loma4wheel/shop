@@ -1,393 +1,351 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
+<!-- ================= HEADER AMAZON STYLE ================= -->
+<header class="header">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="container">
 
-<title>Grey's Collection | Moda y Estilo</title>
+<div class="header-top">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<a href="#" class="logo">
+Grey's <span>Collection</span>
+</a>
 
-<style>
-
-/* =========================
-   BASE
-========================= */
-
-body{
-  margin:0;
-  font-family:Inter,sans-serif;
-  background:#eaeded;
-}
-
-/* =========================
-   HEADER SIMPLE (tu estilo base)
-========================= */
-
-.header{
-  background:#131921;
-  color:white;
-  padding:15px;
-  position:sticky;
-  top:0;
-  z-index:1000;
-}
-
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:0 15px;
-}
-
-.header-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.logo{
-  font-weight:900;
-  font-size:22px;
-}
-
-.logo span{
-  color:#f0c14b;
-}
-
-/* =========================
-   HERO
-========================= */
-
-.hero{
-  background:linear-gradient(135deg,#232f3e,#131921);
-  color:white;
-  padding:50px 20px;
-}
-
-.hero h1{
-  font-size:40px;
-}
-
-/* =========================
-   PRODUCTOS
-========================= */
-
-.products-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:15px;
-  padding:20px;
-}
-
-.product{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-}
-
-/* =========================
-   CART FLOAT
-========================= */
-
-.cart-float{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:#ff3b3b;
-  color:white;
-  border:none;
-  font-size:20px;
-  z-index:9999;
-}
-
-#cart-count{
-  position:absolute;
-  top:5px;
-  right:8px;
-  background:black;
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  font-size:12px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-/* =========================
-   CART PANEL
-========================= */
-
-.cart{
-  position:fixed;
-  top:0;
-  right:0;
-  width:320px;
-  height:100%;
-  background:white;
-  transform:translateX(100%);
-  transition:.3s;
-  z-index:2000;
-  display:flex;
-  flex-direction:column;
-}
-
-.cart.open{
-  transform:translateX(0);
-}
-
-.cart-header{
-  padding:15px;
-  border-bottom:1px solid #ddd;
-  display:flex;
-  justify-content:space-between;
-}
-
-.cart-items{
-  flex:1;
-  overflow:auto;
-  padding:10px;
-}
-
-.cart-item{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 0;
-  border-bottom:1px solid #eee;
-}
-
-.cart-footer{
-  padding:15px;
-  border-top:1px solid #ddd;
-}
-
-/* =========================
-   BUTTONS
-========================= */
-
-button{
-  cursor:pointer;
-}
-
-/* =========================
-   TOAST
-========================= */
-
-.toast{
-  position:fixed;
-  bottom:20px;
-  left:20px;
-  background:#111;
-  color:white;
-  padding:10px 15px;
-  border-radius:8px;
-  opacity:0;
-  transition:.3s;
-}
-
-.toast.show{
-  opacity:1;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<!-- ================= HEADER ================= -->
-<div class="header">
-  <div class="container header-top">
-    <div class="logo">Grey's <span>Collection</span></div>
-  </div>
+<!-- SEARCH -->
+<div class="search-box">
+<input id="searchInput" placeholder="Buscar productos..." />
+<button id="searchBtn">🔎</button>
 </div>
+
+<!-- CART -->
+<div class="cart-btn" id="cartBtn">
+🛒
+<div class="cart-count" id="cartCount">0</div>
+</div>
+
+</div>
+
+</div>
+
+</header>
 
 <!-- ================= HERO ================= -->
-<div class="hero">
-  <div class="container">
-    <h1>Moda y estilo</h1>
-  </div>
+<section class="hero">
+<div class="container">
+<h1>Moda estilo Amazon con carrito inteligente</h1>
+<p>Compra rápida con carrito persistente + WhatsApp checkout</p>
 </div>
+</section>
 
-<!-- ================= PRODUCTOS ================= -->
-<div class="products-grid">
+<!-- ================= PRODUCTS ================= -->
+<main class="container">
 
-  <div class="product">
-    <h3>Producto 1</h3>
-    <button onclick="agregarCarrito(1)">Agregar</button>
-  </div>
+<div id="productsGrid" class="products-grid"></div>
 
-  <div class="product">
-    <h3>Producto 2</h3>
-    <button onclick="agregarCarrito(2)">Agregar</button>
-  </div>
-
-</div>
+</main>
 
 <!-- ================= FLOAT CART ================= -->
 <button id="cart-float-btn" class="cart-float">
-  🛒 <span id="cart-count">0</span>
+🛒 <span id="cart-count">0</span>
 </button>
 
-<!-- ================= CART ================= -->
+<!-- ================= CART PANEL ================= -->
 <aside class="cart" id="cart">
 
-  <div class="cart-header">
-    <h3>Carrito</h3>
-    <button onclick="toggleCart()">✕</button>
-  </div>
+<div class="cart-header">
+<h3>Tu carrito</h3>
+<button id="closeCart">✕</button>
+</div>
 
-  <div class="cart-items" id="cartItems">
-    <p style="text-align:center">Vacío</p>
-  </div>
+<div id="cartItems" class="cart-items"></div>
 
-  <div class="cart-footer">
-    <button onclick="finalizarCompra()" style="width:100%;padding:10px;background:green;color:white;border:none;">
-      Finalizar compra
-    </button>
-  </div>
+<div class="cart-footer">
+
+<div class="cart-total">
+Total: <span id="cartTotal">RD$0</span>
+</div>
+
+<button id="checkoutBtn" class="checkout-btn">
+Finalizar compra
+</button>
+
+</div>
 
 </aside>
 
-<!-- ================= TOAST ================= -->
-<div class="toast" id="toast"></div>
+<!-- ================= CHECKOUT MODAL ================= -->
+<div id="checkoutModal" class="modal">
 
-<script>
+<div class="modal-content">
 
-/* ================= DATA ================= */
+<div class="modal-header">
+<h2>Checkout</h2>
+</div>
 
-let productos = [
-  {id:1,nombre:"Producto 1",precio:1200,stock:10},
-  {id:2,nombre:"Producto 2",precio:2500,stock:5}
-];
+<div class="modal-body">
 
-let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+<form id="checkoutForm">
 
-/* ================= CART ================= */
+<input name="nombre" placeholder="Nombre" />
+<input name="telefono" placeholder="Teléfono" />
+<textarea name="direccion" placeholder="Dirección"></textarea>
 
-function toggleCart(){
-  document.getElementById("cart").classList.toggle("open");
+</form>
+
+</div>
+
+<div class="modal-footer">
+
+<button id="confirmOrder">Confirmar por WhatsApp</button>
+
+</div>
+
+</div>
+
+</div>
+
+body{
+margin:0;
+font-family:Inter;
+background:#eaeded;
 }
 
-/* ================= SAVE ================= */
+/* HEADER AMAZON */
+.header{
+background:#131921;
+color:white;
+padding:15px;
+position:sticky;
+top:0;
+z-index:999;
+}
 
+.header-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+}
+
+.logo span{color:#f0c14b}
+
+.search-box{
+flex:1;
+display:flex;
+}
+
+.search-box input{
+flex:1;
+padding:10px;
+}
+
+.cart-btn{
+position:relative;
+cursor:pointer;
+font-size:24px;
+}
+
+.cart-count{
+position:absolute;
+top:-8px;
+right:-8px;
+background:red;
+color:white;
+width:20px;
+height:20px;
+border-radius:50%;
+font-size:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+/* PRODUCTS */
+.products-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:15px;
+padding:20px;
+}
+
+.product-card{
+background:white;
+padding:15px;
+border-radius:10px;
+}
+
+/* CART */
+.cart{
+position:fixed;
+right:0;
+top:0;
+width:350px;
+height:100%;
+background:white;
+transform:translateX(100%);
+transition:.3s;
+z-index:2000;
+display:flex;
+flex-direction:column;
+}
+
+.cart.open{
+transform:translateX(0);
+}
+
+.cart-items{
+flex:1;
+overflow:auto;
+padding:10px;
+}
+
+.cart-item{
+display:flex;
+justify-content:space-between;
+padding:10px 0;
+border-bottom:1px solid #eee;
+}
+
+/* FLOAT BUTTON */
+.cart-float{
+position:fixed;
+bottom:20px;
+right:20px;
+width:60px;
+height:60px;
+border-radius:50%;
+background:#ff3b3b;
+color:white;
+border:none;
+z-index:9999;
+}
+
+/* MODAL */
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+}
+
+.modal-content{
+background:white;
+max-width:500px;
+margin:50px auto;
+padding:20px;
+}
+
+// ================= PRODUCTS =================
+let productos = [
+  {id:1,nombre:"Nike Air",precio:2500,stock:10},
+  {id:2,nombre:"Adidas Ultra",precio:3200,stock:5}
+];
+
+// ================= CART =================
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+// ================= SAVE =================
 function save(){
   localStorage.setItem("carrito",JSON.stringify(carrito));
 }
 
-/* ================= ADD ================= */
+// ================= RENDER PRODUCTS =================
+function renderProducts(){
 
-function agregarCarrito(id){
+  const grid = document.getElementById("productsGrid");
+  grid.innerHTML = "";
+
+  productos.forEach(p=>{
+
+    grid.innerHTML += `
+      <div class="product-card">
+        <h3>${p.nombre}</h3>
+        <p>RD$ ${p.precio}</p>
+        <button onclick="add(${p.id})">Agregar</button>
+      </div>
+    `;
+  });
+}
+
+// ================= ADD =================
+function add(id){
 
   const p = productos.find(x=>x.id===id);
-  if(!p) return;
-
-  const item = carrito.find(x=>x.id===id);
+  let item = carrito.find(x=>x.id===id);
 
   if(item){
     if(item.cantidad+1>p.stock) return;
     item.cantidad++;
-    item.subtotal = item.cantidad * item.precio;
   }else{
     carrito.push({
       id:p.id,
       nombre:p.nombre,
       precio:p.precio,
-      cantidad:1,
-      subtotal:p.precio
+      cantidad:1
     });
   }
 
   save();
-  render();
+  renderCart();
 }
 
-/* ================= CHANGE ================= */
-
-function cambiarCantidad(id,c){
-
-  const item = carrito.find(x=>x.id===id);
-  if(!item) return;
-
-  const nueva = item.cantidad + c;
-
-  if(nueva<=0){
-    carrito = carrito.filter(x=>x.id!==id);
-  }else{
-    item.cantidad = nueva;
-    item.subtotal = item.precio * nueva;
-  }
-
-  save();
-  render();
-}
-
-/* ================= RENDER ================= */
-
-function render(){
+// ================= CART =================
+function renderCart(){
 
   const box = document.getElementById("cartItems");
-  const badge = document.getElementById("cart-count");
+  const count = document.getElementById("cartCount");
+  const float = document.getElementById("cart-count");
+  const totalBox = document.getElementById("cartTotal");
+
+  box.innerHTML = "";
 
   let total = 0;
   let qty = 0;
 
-  box.innerHTML = "";
-
-  if(carrito.length===0){
-    box.innerHTML = "<p style='text-align:center'>Vacío</p>";
-    badge.textContent = 0;
-    return;
-  }
-
   carrito.forEach(i=>{
 
-    total += i.subtotal;
+    total += i.precio*i.cantidad;
     qty += i.cantidad;
 
     box.innerHTML += `
       <div class="cart-item">
-        <div>${i.nombre}<br>RD$ ${i.precio}</div>
-
-        <div>
-          <button onclick="cambiarCantidad(${i.id},-1)">-</button>
-          ${i.cantidad}
-          <button onclick="cambiarCantidad(${i.id},1)">+</button>
-        </div>
+        <span>${i.nombre}</span>
+        <span>${i.cantidad}</span>
       </div>
     `;
   });
 
-  badge.textContent = qty;
+  count.textContent = qty;
+  if(float) float.textContent = qty;
+  totalBox.textContent = "RD$"+total;
 }
 
-/* ================= FINALIZAR ================= */
+// ================= OPEN CART =================
+document.getElementById("cartBtn").onclick = ()=>{
+  document.getElementById("cart").classList.toggle("open");
+};
 
-function finalizarCompra(){
+document.getElementById("cart-float-btn").onclick = ()=>{
+  document.getElementById("cart").classList.toggle("open");
+};
 
-  if(carrito.length===0) return;
+// ================= CHECKOUT WHATSAPP =================
+document.getElementById("checkoutBtn").onclick = ()=>{
 
-  alert("Compra finalizada ✔");
+  let mensaje = "🛒 Pedido:\n";
+
+  carrito.forEach(i=>{
+    mensaje += `- ${i.nombre} x${i.cantidad}\n`;
+  });
+
+  let url =
+  "https://wa.me/18298706768?text=" + encodeURIComponent(mensaje);
+
+  window.open(url,"_blank");
 
   carrito = [];
   save();
-  render();
-}
+  renderCart();
+};
 
-/* ================= FLOAT CLICK ================= */
-
-document.getElementById("cart-float-btn")
-.addEventListener("click",toggleCart);
-
-/* ================= INIT ================= */
-
-render();
-
-</script>
-
-</body>
-</html>
+// ================= INIT =================
+renderProducts();
+renderCart();
