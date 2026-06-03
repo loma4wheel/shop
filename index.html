@@ -371,35 +371,56 @@ header{
    CONFIG
 ========================= */
 
-const URL_BACKEND_GOOGLE =
-"https://script.google.com/macros/s/AKfycbxdJr4HGGf3Opm_jc9EVJrM8c4O9lqTCsrjUwq7WLgS7E3Q6Jb5lAau-wHfshVmar7wiA/exec";
+const URL_BACKEND_GOOGLE = "https://script.google.com/macros/s/AKfycbxdJr4HGGf3Opm_jc9EVJrM8c4O9lqTCsrjUwq7WLgS7E3Q6Jb5lAau-wHfshVmar7wiA/exec";
+const WHATSAPP_TIENDA = "18298706768";
 
 /* =========================
-   VARIABLES
+   ESTADO GLOBAL LIMPIO
 ========================= */
 
 let productos = [];
 let productosFiltrados = [];
+let carrito = [];
 let categoriaActual = "todas";
 
 /* =========================
-   INIT
+   INIT (UNA SOLA VEZ)
 ========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+  cargarCarrito();
   cargarProductos();
-  activarBuscador();
+  eventosUI();
 });
 
 /* =========================
-   CARGAR PRODUCTOS
+   EVENTOS UI
+========================= */
+
+function eventosUI(){
+
+  // carrito abrir/cerrar
+  document.querySelector(".cart").addEventListener("click", toggleCart);
+
+  document.querySelector(".cart-float").addEventListener("click", toggleCart);
+
+  // buscador
+  const input = document.querySelector(".search input");
+  if(input){
+    input.addEventListener("input", filtrar);
+  }
+
+}
+
+/* =========================
+   PRODUCTOS
 ========================= */
 
 async function cargarProductos(){
 
   const cont = document.getElementById("products");
 
-  cont.innerHTML = "Cargando productos...";
+  cont.innerHTML = "Cargando...";
 
   try{
 
@@ -411,13 +432,12 @@ async function cargarProductos(){
     productosFiltrados = [...productos];
 
     renderProductos();
-    crearCategorias();
+    renderCategorias();
 
-  }catch(err){
+  }catch(e){
 
     cont.innerHTML = "Error cargando productos";
-
-    console.error(err);
+    console.error(e);
 
   }
 
@@ -431,50 +451,48 @@ function renderProductos(){
 
   const cont = document.getElementById("products");
 
+  cont.innerHTML = "";
+
   if(productosFiltrados.length === 0){
     cont.innerHTML = "<p>No hay productos</p>";
     return;
   }
 
-  cont.innerHTML = "";
-
   productosFiltrados.forEach(p => {
 
-    const card = document.createElement("div");
-    card.className = "card";
+    const div = document.createElement("div");
+    div.className = "card";
 
-    card.innerHTML = `
-      <img src="${p.imagen}" alt="${p.nombre}">
+    div.innerHTML = `
+      <img src="${p.imagen}">
       <div class="card-body">
-
         <h3>${p.nombre}</h3>
-
         <small>${p.categoria || ""}</small>
+        <div class="price">RD$ ${money(p.precio)}</div>
 
-        <div class="price">
-          RD$ ${Number(p.precio).toLocaleString("es-DO")}
-        </div>
-
-        <button class="add" onclick="agregarCarrito('${p.id}')">
-          Añadir al carrito
+        <button class="add">
+          Añadir
         </button>
-
       </div>
     `;
 
-    cont.appendChild(card);
+    div.querySelector("button").onclick = () => agregarCarrito(p.id);
+
+    cont.appendChild(div);
 
   });
 
 }
 
 /* =========================
-   CATEGORÍAS
+   CATEGORÍAS (FIX REAL)
 ========================= */
 
-function crearCategorias(){
+function renderCategorias(){
 
   const cont = document.querySelector(".cat-list");
+
+  cont.innerHTML = `<button class="cat active" onclick="setCat('todas')">Todas</button>`;
 
   const cats = [...new Set(productos.map(p => p.categoria))];
 
@@ -484,10 +502,7 @@ function crearCategorias(){
     btn.className = "cat";
     btn.textContent = c;
 
-    btn.onclick = () => {
-      categoriaActual = c;
-      filtrar();
-    };
+    btn.onclick = () => setCat(c);
 
     cont.appendChild(btn);
 
@@ -496,18 +511,38 @@ function crearCategorias(){
 }
 
 /* =========================
-   FILTROS
+   SET CATEGORÍA (FIX)
+========================= */
+
+function setCat(cat){
+
+  categoriaActual = cat;
+
+  document.querySelectorAll(".cat").forEach(b => b.classList.remove("active"));
+
+  event.target.classList.add("active");
+
+  filtrar();
+
+}
+
+/* =========================
+   FILTRO (FIX TOTAL)
 ========================= */
 
 function filtrar(){
 
+  const text = document.querySelector(".search input")?.value?.toLowerCase() || "";
+
   productosFiltrados = productos.filter(p => {
 
-    const catOk =
-      categoriaActual === "todas" ||
-      p.categoria === categoriaActual;
+    const okCat = categoriaActual === "todas" || p.categoria === categoriaActual;
 
-    return catOk;
+    const okText =
+      p.nombre.toLowerCase().includes(text) ||
+      (p.descripcion || "").toLowerCase().includes(text);
+
+    return okCat && okText;
 
   });
 
@@ -516,470 +551,156 @@ function filtrar(){
 }
 
 /* =========================
-   BUSCADOR
+   CARRITO (UN SOLO SISTEMA)
 ========================= */
 
-function activarBuscador(){
+function agregarCarrito(id){
 
-  const input = document.querySelector(".search input");
+  const prod = productos.find(p => String(p.id) === String(id));
+  if(!prod) return;
 
-  input.addEventListener("input", e => {
+  const item = carrito.find(p => String(p.id) === String(id));
 
-    const texto = e.target.value.toLowerCase();
+  if(item){
+    if(item.cantidad + 1 > prod.stock) return alert("Sin stock");
+    item.cantidad++;
+  }else{
+    carrito.push({
+      id: prod.id,
+      nombre: prod.nombre,
+      precio: Number(prod.precio),
+      imagen: prod.imagen,
+      stock: Number(prod.stock),
+      cantidad: 1
+    });
+  }
 
-    productosFiltrados = productos.filter(p =>
-
-      p.nombre.toLowerCase().includes(texto) ||
-      (p.descripcion || "").toLowerCase().includes(texto)
-
-    );
-
-    renderProductos();
-
-  });
+  saveCart();
+  renderCart();
+  updateCount();
 
 }
 
 /* =========================
-   HELPERS
+   RENDER CARRITO (FIX ABRIR)
+========================= */
+
+function renderCart(){
+
+  const panel = document.getElementById("cartPanel");
+
+  let total = 0;
+
+  let html = `
+    <div class="cart-header">
+      <h3>Carrito</h3>
+      <span onclick="toggleCart()" style="cursor:pointer">✕</span>
+    </div>
+    <div style="padding:15px">
+  `;
+
+  if(carrito.length === 0){
+    panel.innerHTML = html + "<p>Vacío</p></div>";
+    return;
+  }
+
+  carrito.forEach(i => {
+
+    total += i.precio * i.cantidad;
+
+    html += `
+      <div style="display:flex;justify-content:space-between;margin:10px 0">
+        <div>${i.nombre}</div>
+        <div>
+          <button onclick="changeQty('${i.id}',-1)">-</button>
+          ${i.cantidad}
+          <button onclick="changeQty('${i.id}',1)">+</button>
+        </div>
+      </div>
+    `;
+
+  });
+
+  html += `<hr><b>Total: RD$ ${money(total)}</b></div>`;
+
+  panel.innerHTML = html;
+
+}
+
+/* =========================
+   CAMBIAR CANTIDAD
+========================= */
+
+function changeQty(id, n){
+
+  const item = carrito.find(p => String(p.id) === String(id));
+  const prod = productos.find(p => String(p.id) === String(id));
+
+  if(!item) return;
+
+  const next = item.cantidad + n;
+
+  if(next <= 0){
+    carrito = carrito.filter(p => p.id !== id);
+  }else if(next <= prod.stock){
+    item.cantidad = next;
+  }
+
+  saveCart();
+  renderCart();
+  updateCount();
+
+}
+
+/* =========================
+   TOGGLE CART (FIX REAL)
+========================= */
+
+function toggleCart(){
+
+  const panel = document.getElementById("cartPanel");
+
+  panel.classList.toggle("open");
+
+}
+
+/* =========================
+   CONTADOR FIX
+========================= */
+
+function updateCount(){
+
+  const c = document.getElementById("cartCount");
+
+  c.textContent = carrito.reduce((a,b) => a + b.cantidad, 0);
+
+}
+
+/* =========================
+   STORAGE FIX
+========================= */
+
+function saveCart(){
+  localStorage.setItem("cart", JSON.stringify(carrito));
+}
+
+function cargarCarrito(){
+
+  const d = localStorage.getItem("cart");
+
+  carrito = d ? JSON.parse(d) : [];
+
+  renderCart();
+  updateCount();
+
+}
+
+/* =========================
+   MONEY
 ========================= */
 
 function money(v){
-  return Number(v || 0).toLocaleString("es-DO");
+  return Number(v||0).toLocaleString("es-DO");
 }
-
-</script>
-
-<script>
-
-/* =========================================================
-   CARRITO
-========================================================= */
-
-let carrito = [];
-
-/* =========================
-   AGREGAR AL CARRITO
-========================= */
-
-function agregarCarrito(id){
-
-  const producto = productos.find(
-    p => String(p.id) === String(id)
-  );
-
-  if(!producto) return;
-
-  const item = carrito.find(
-    p => String(p.id) === String(id)
-  );
-
-  const stock = Number(producto.stock || 0);
-
-  if(item){
-
-    if(item.cantidad + 1 > stock){
-      alert("No hay suficiente stock");
-      return;
-    }
-
-    item.cantidad += 1;
-
-  }else{
-
-    carrito.push({
-      id: producto.id,
-      nombre: producto.nombre,
-      precio: Number(producto.precio),
-      imagen: producto.imagen,
-      stock: stock,
-      cantidad: 1
-    });
-
-  }
-
-  guardarCarrito();
-  renderCarrito();
-  actualizarContador();
-
-}
-
-/* =========================
-   RENDER CARRITO
-========================= */
-
-function renderCarrito(){
-
-  const panel = document.getElementById("cartPanel");
-
-  if(!panel) return;
-
-  let html = `
-    <div class="cart-header">
-      <h3>Carrito</h3>
-      <span onclick="toggleCart()" style="cursor:pointer">✕</span>
-    </div>
-
-    <div style="padding:15px">
-  `;
-
-  if(carrito.length === 0){
-    panel.innerHTML = html + "<p>Carrito vacío</p></div>";
-    return;
-  }
-
-  let total = 0;
-
-  carrito.forEach(item => {
-
-    total += item.precio * item.cantidad;
-
-    html += `
-      <div style="display:flex;gap:10px;margin-bottom:10px;align-items:center">
-
-        <img src="${item.imagen}" style="width:50px;height:50px;object-fit:cover;border-radius:8px">
-
-        <div style="flex:1">
-          <strong>${item.nombre}</strong><br>
-          RD$ ${money(item.precio)}
-        </div>
-
-        <div>
-          <button onclick="cambiarCantidad('${item.id}',-1)">-</button>
-          ${item.cantidad}
-          <button onclick="cambiarCantidad('${item.id}',1)">+</button>
-        </div>
-
-      </div>
-    `;
-
-  });
-
-  html += `
-    <hr>
-    <h3>Total: RD$ ${money(total)}</h3>
-  </div>
-  `;
-
-  panel.innerHTML = html;
-
-}
-
-/* =========================
-   CAMBIAR CANTIDAD
-========================= */
-
-function cambiarCantidad(id, cambio){
-
-  const item = carrito.find(
-    p => String(p.id) === String(id)
-  );
-
-  if(!item) return;
-
-  const producto = productos.find(
-    p => String(p.id) === String(id)
-  );
-
-  if(!producto) return;
-
-  const nueva = item.cantidad + cambio;
-
-  if(nueva <= 0){
-    carrito = carrito.filter(
-      p => String(p.id) !== String(id)
-    );
-  }else{
-
-    if(nueva > producto.stock){
-      alert("Stock insuficiente");
-      return;
-    }
-
-    item.cantidad = nueva;
-
-  }
-
-  guardarCarrito();
-  renderCarrito();
-  actualizarContador();
-
-}
-
-/* =========================
-   CONTADOR
-========================= */
-
-function actualizarContador(){
-
-  const contador = document.getElementById("cartCount");
-
-  if(!contador) return;
-
-  let total = carrito.reduce(
-    (acc, i) => acc + i.cantidad, 0
-  );
-
-  contador.textContent = total;
-
-}
-
-/* =========================
-   LOCALSTORAGE
-========================= */
-
-function guardarCarrito(){
-  localStorage.setItem("carrito", JSON.stringify(carrito));
-}
-
-function cargarCarrito(){
-
-  const data = localStorage.getItem("carrito");
-
-  if(data){
-    carrito = JSON.parse(data);
-  }
-
-  renderCarrito();
-  actualizarContador();
-
-}
-
-/* =========================
-   TOGGLE CART
-========================= */
-
-function toggleCart(){
-
-  const panel = document.getElementById("cartPanel");
-
-  panel.classList.toggle("open");
-
-}
-
-/* =========================
-   INIT EXTRA
-========================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-  cargarCarrito();
-});
-
-</script>
-
-<script>
-
-/* =========================================================
-   CARRITO
-========================================================= */
-
-let carrito = [];
-
-/* =========================
-   AGREGAR AL CARRITO
-========================= */
-
-function agregarCarrito(id){
-
-  const producto = productos.find(
-    p => String(p.id) === String(id)
-  );
-
-  if(!producto) return;
-
-  const item = carrito.find(
-    p => String(p.id) === String(id)
-  );
-
-  const stock = Number(producto.stock || 0);
-
-  if(item){
-
-    if(item.cantidad + 1 > stock){
-      alert("No hay suficiente stock");
-      return;
-    }
-
-    item.cantidad += 1;
-
-  }else{
-
-    carrito.push({
-      id: producto.id,
-      nombre: producto.nombre,
-      precio: Number(producto.precio),
-      imagen: producto.imagen,
-      stock: stock,
-      cantidad: 1
-    });
-
-  }
-
-  guardarCarrito();
-  renderCarrito();
-  actualizarContador();
-
-}
-
-/* =========================
-   RENDER CARRITO
-========================= */
-
-function renderCarrito(){
-
-  const panel = document.getElementById("cartPanel");
-
-  if(!panel) return;
-
-  let html = `
-    <div class="cart-header">
-      <h3>Carrito</h3>
-      <span onclick="toggleCart()" style="cursor:pointer">✕</span>
-    </div>
-
-    <div style="padding:15px">
-  `;
-
-  if(carrito.length === 0){
-    panel.innerHTML = html + "<p>Carrito vacío</p></div>";
-    return;
-  }
-
-  let total = 0;
-
-  carrito.forEach(item => {
-
-    total += item.precio * item.cantidad;
-
-    html += `
-      <div style="display:flex;gap:10px;margin-bottom:10px;align-items:center">
-
-        <img src="${item.imagen}" style="width:50px;height:50px;object-fit:cover;border-radius:8px">
-
-        <div style="flex:1">
-          <strong>${item.nombre}</strong><br>
-          RD$ ${money(item.precio)}
-        </div>
-
-        <div>
-          <button onclick="cambiarCantidad('${item.id}',-1)">-</button>
-          ${item.cantidad}
-          <button onclick="cambiarCantidad('${item.id}',1)">+</button>
-        </div>
-
-      </div>
-    `;
-
-  });
-
-  html += `
-    <hr>
-    <h3>Total: RD$ ${money(total)}</h3>
-  </div>
-  `;
-
-  panel.innerHTML = html;
-
-}
-
-/* =========================
-   CAMBIAR CANTIDAD
-========================= */
-
-function cambiarCantidad(id, cambio){
-
-  const item = carrito.find(
-    p => String(p.id) === String(id)
-  );
-
-  if(!item) return;
-
-  const producto = productos.find(
-    p => String(p.id) === String(id)
-  );
-
-  if(!producto) return;
-
-  const nueva = item.cantidad + cambio;
-
-  if(nueva <= 0){
-    carrito = carrito.filter(
-      p => String(p.id) !== String(id)
-    );
-  }else{
-
-    if(nueva > producto.stock){
-      alert("Stock insuficiente");
-      return;
-    }
-
-    item.cantidad = nueva;
-
-  }
-
-  guardarCarrito();
-  renderCarrito();
-  actualizarContador();
-
-}
-
-/* =========================
-   CONTADOR
-========================= */
-
-function actualizarContador(){
-
-  const contador = document.getElementById("cartCount");
-
-  if(!contador) return;
-
-  let total = carrito.reduce(
-    (acc, i) => acc + i.cantidad, 0
-  );
-
-  contador.textContent = total;
-
-}
-
-/* =========================
-   LOCALSTORAGE
-========================= */
-
-function guardarCarrito(){
-  localStorage.setItem("carrito", JSON.stringify(carrito));
-}
-
-function cargarCarrito(){
-
-  const data = localStorage.getItem("carrito");
-
-  if(data){
-    carrito = JSON.parse(data);
-  }
-
-  renderCarrito();
-  actualizarContador();
-
-}
-
-/* =========================
-   TOGGLE CART
-========================= */
-
-function toggleCart(){
-
-  const panel = document.getElementById("cartPanel");
-
-  panel.classList.toggle("open");
-
-}
-
-/* =========================
-   INIT EXTRA
-========================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-  cargarCarrito();
-});
 
 </script>
