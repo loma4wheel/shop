@@ -672,6 +672,23 @@ width:100%;
   font-size:12px;
   font-weight:700;
 }
+
+   .cart{
+  position:fixed;
+  top:0;
+  right:-420px;
+  width:420px;
+  height:100vh;
+  background:#fff;
+  z-index:9999;
+  transition:.3s;
+  overflow-y:auto;
+  box-shadow:-5px 0 20px rgba(0,0,0,.15);
+}
+
+.cart.open{
+  right:0;
+}
    
 </style>
 
@@ -1166,6 +1183,7 @@ let carrito = [];
 
 let categoriaActual = "todas";
 
+
 /* =========================================================
    INICIO
 ========================================================= */
@@ -1180,21 +1198,317 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+
+/* =========================================
+   CARRITO
+========================================= */
+
+function cargarCarrito() {
+
+  const carritoGuardado =
+    localStorage.getItem("carrito");
+
+  if(carritoGuardado){
+
+    carrito =
+      JSON.parse(carritoGuardado);
+
+  }else{
+
+    carrito = [];
+
+  }
+
+  actualizarCarrito();
+
+}
+
+function guardarCarrito(){
+
+  localStorage.setItem(
+    "carrito",
+    JSON.stringify(carrito)
+  );
+
+}
+
+function agregarCarrito(id){
+
+  const producto =
+    productos.find(
+      p => String(p.id) === String(id)
+    );
+
+  if(!producto) return;
+
+  const existente =
+    carrito.find(
+      item => String(item.id) === String(id)
+    );
+
+  const cantidadActual =
+    existente ? existente.cantidad : 0;
+
+  if(cantidadActual + 1 > producto.stock){
+
+    mostrarToast(
+      "Inventario insuficiente"
+    );
+
+    return;
+
+  }
+
+  if(existente){
+
+    existente.cantidad++;
+
+    existente.subtotal =
+      existente.cantidad *
+      existente.precio;
+
+  }else{
+
+    carrito.push({
+
+      id: producto.id,
+      nombre: producto.nombre,
+      precio: producto.precio,
+      imagen: producto.imagen,
+      unidad: producto.unidad,
+      cantidad: 1,
+      subtotal: producto.precio
+
+    });
+
+  }
+
+  guardarCarrito();
+  actualizarCarrito();
+
+  mostrarToast(
+    "Producto agregado"
+  );
+
+}
+
+function actualizarCarrito(){
+
+  const cartItems =
+    document.getElementById(
+      "cartItems"
+    );
+
+  const cartTotal =
+    document.getElementById(
+      "cartTotal"
+    );
+
+  const cartCount =
+    document.getElementById(
+      "cartCount"
+    );
+
+  if(!cartItems) return;
+
+  if(carrito.length === 0){
+
+    cartItems.innerHTML = `
+      <p style="
+      text-align:center;
+      padding:30px;
+      color:#666;">
+      Tu carrito está vacío
+      </p>
+    `;
+
+    cartTotal.textContent =
+      "RD$0";
+
+    cartCount.textContent =
+      "0";
+
+    return;
+
+  }
+
+  let total = 0;
+  let cantidad = 0;
+
+  cartItems.innerHTML = "";
+
+  carrito.forEach(item=>{
+
+    total += item.subtotal;
+
+    cantidad += item.cantidad;
+
+    cartItems.innerHTML += `
+
+      <div class="cart-item">
+
+        <div>
+
+          <strong>
+            ${item.nombre}
+          </strong>
+
+          <br>
+
+          RD$ ${money(item.precio)}
+
+        </div>
+
+        <div>
+
+          <button
+          onclick="cambiarCantidad('${item.id}',-1)">
+          -
+          </button>
+
+          ${item.cantidad}
+
+          <button
+          onclick="cambiarCantidad('${item.id}',1)">
+          +
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+  cartTotal.textContent =
+    "RD$ " + money(total);
+
+  cartCount.textContent =
+    cantidad;
+
+}
+
+function cambiarCantidad(id,cambio){
+
+  const item =
+    carrito.find(
+      p => String(p.id) === String(id)
+    );
+
+  const producto =
+    productos.find(
+      p => String(p.id) === String(id)
+    );
+
+  if(!item) return;
+
+  const nuevaCantidad =
+    item.cantidad + cambio;
+
+  if(nuevaCantidad <= 0){
+
+    carrito =
+      carrito.filter(
+        p => String(p.id) !== String(id)
+      );
+
+  }else{
+
+    if(
+      nuevaCantidad >
+      producto.stock
+    ){
+
+      mostrarToast(
+        "Stock insuficiente"
+      );
+
+      return;
+
+    }
+
+    item.cantidad =
+      nuevaCantidad;
+
+    item.subtotal =
+      item.precio *
+      nuevaCantidad;
+
+  }
+
+  guardarCarrito();
+  actualizarCarrito();
+
+}
+
+
+   
 /* =========================================================
    EVENTOS
 ========================================================= */
 
-function registrarEventos(){
+   function registrarEventos(){
 
-  document
-  .getElementById("searchInput")
-  .addEventListener("input", aplicarFiltros);
+  const buscador =
+    document.getElementById("searchInput");
 
-  document
-  .getElementById("sortProducts")
-  .addEventListener("change", aplicarFiltros);
+  if(buscador){
+    buscador.addEventListener(
+      "input",
+      aplicarFiltros
+    );
+  }
+
+  const ordenar =
+    document.getElementById("sortProducts");
+
+  if(ordenar){
+    ordenar.addEventListener(
+      "change",
+      aplicarFiltros
+    );
+  }
+
+  const btnCarrito =
+    document.getElementById("cartBtn");
+
+  if(btnCarrito){
+
+    btnCarrito.addEventListener(
+      "click",
+      ()=>{
+
+        document
+        .getElementById("cart")
+        .classList.toggle("open");
+
+      }
+    );
+
+  }
+
+  const cerrarCarrito =
+    document.getElementById("closeCart");
+
+  if(cerrarCarrito){
+
+    cerrarCarrito.addEventListener(
+      "click",
+      ()=>{
+
+        document
+        .getElementById("cart")
+        .classList.remove("open");
+
+      }
+    );
+
+  }
 
 }
+
+
 
 /* =========================================================
    TOAST
@@ -1777,6 +2091,7 @@ function agregarCarrito(idProducto){
   actualizarCarrito();
 
 }
+
 
    
 
