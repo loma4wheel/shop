@@ -352,21 +352,6 @@ button{cursor:pointer;border:none;font-family:var(--font-body)}
   </footer>
 </aside>
 
-<div id="toast"></div>
-
-<button id="admin-toggle" onclick="toggleAdmin()" title="Panel Administrador">⚙️</button>
-<div id="admin-panel">
-  <h3>⚙️ Agregar Producto</h3>
-  <input class="form-input" id="ap-nombre" placeholder="Nombre del producto"/>
-  <input class="form-input" id="ap-desc" placeholder="Descripción breve"/>
-  <input class="form-input" id="ap-precio" placeholder="Precio (ej: 29.99)" type="number" step="0.01"/>
-  <input class="form-input" id="ap-stock" placeholder="Cantidad en stock" type="number"/>
-  <input class="form-input" id="ap-cat" placeholder="Categoría"/>
-  <input class="form-input" id="ap-img" placeholder="URL de imagen (opcional)"/>
-  <button id="btn-add-prod" onclick="agregarProducto()">➕ Guardar en Google Sheets</button>
-  <div id="api-status">API: <span id="api-dot">Conectando…</span></div>
-</div>
-
 <script>
 // ══════════════════════════════════════════════════════════════
 //  CAMBIA SOLO ESTA LÍNEA — pega tu URL del Web App de Apps Script
@@ -381,18 +366,7 @@ let carrito    = JSON.parse(localStorage.getItem("shopnow_cart") || "[]");
 let catActiva  = "Todos";
 let busqueda   = "";
 
-// Productos demo (se muestran mientras carga la API)
-const DEMO_PRODUCTOS = [
-  {id:"PROD-001",nombre:"Laptop Pro 15",descripcion:"Intel i7, 16GB RAM, 512GB SSD",precio:850,stock:10,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400"},
-  {id:"PROD-002",nombre:"Auriculares Bluetooth",descripcion:"Noise cancelling, 30h batería",precio:120,stock:25,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"},
-  {id:"PROD-003",nombre:"Teclado Mecánico",descripcion:"RGB, switches Cherry MX Red",precio:75,stock:3,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400"},
-  {id:"PROD-004",nombre:"Silla Gaming",descripcion:"Ergonómica, reclinable 180°",precio:320,stock:8,categoria:"Muebles",imagen:"https://images.unsplash.com/photo-1606830733744-0ad4a3b7f1ef?w=400"},
-  {id:"PROD-005",nombre:"Monitor 27\" 4K",descripcion:"IPS, 144Hz, HDR400",precio:450,stock:0,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400"},
-  {id:"PROD-006",nombre:"Mouse Inalámbrico",descripcion:"DPI ajustable, 12 botones",precio:45,stock:30,categoria:"Electrónica",imagen:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400"},
-];
-const DEMO_CATS = [
-  {nombre:"Electrónica",icono:"💻"},{nombre:"Muebles",icono:"🪑"},
-];
+
 
 // ── UTILIDAD: construir URL de imagen correcta ─────────────────
 // Las imágenes de Drive llegan como:
