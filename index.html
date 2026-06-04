@@ -874,12 +874,23 @@ function toggleAdmin() { document.getElementById("admin-panel").classList.toggle
 // ── TOAST ─────────────────────────────────────────────────────
 let toastTimer;
 function toast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove("show"), 3000);
+  console.log(msg);
+
+  const toastEl = document.getElementById("toast");
+
+  if (!toastEl) {
+    return;
+  }
+
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+
+  setTimeout(() => {
+    toastEl.classList.remove("show");
+  }, 2000);
 }
+
+  
 </script>
 </body>
 </html>
