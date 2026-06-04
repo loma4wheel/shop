@@ -410,15 +410,22 @@ window.addEventListener("DOMContentLoaded", () => {
 // ── CARGA INICIAL ─────────────────────────────────────────────
 async function cargarTodo() {
   try {
-    const res  = await fetch(API_URL + "?t=" + Date.now()); // evitar caché
+    const res = await fetch(API_URL + "?t=" + Date.now());
+
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status);
+    }
+
     const data = await res.json();
-    if (data.error) throw new Error(data.error);
 
-    productos  = data.productos  || [];
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    productos  = data.productos || [];
     categorias = data.categorias || [];
-    cfg        = data.config     || {};
+    cfg        = data.config || {};
 
-    // Normalizar URLs de imágenes de todos los productos
     productos.forEach(p => {
       p.imagen = normalizarImagenUrl(p.imagen);
     });
@@ -426,16 +433,23 @@ async function cargarTodo() {
     aplicarConfig();
     renderCategorias();
     renderGrid();
-    document.getElementById("api-dot").innerHTML = '<span style="color:var(--green)">✅ Conectado</span>';
+
+    document.getElementById("api-dot").innerHTML =
+      '<span style="color:var(--green)">✅ Conectado</span>';
 
   } catch (e) {
-    console.warn("API no disponible, usando datos demo:", e.message);
-    productos  = DEMO_PRODUCTOS;
-    categorias = DEMO_CATS;
+
+    console.error("Error cargando API:", e);
+
+    productos = [];
+    categorias = [];
+    cfg = {};
+
     renderCategorias();
     renderGrid();
+
     document.getElementById("api-dot").innerHTML =
-      '<span style="color:#f59e0b">⚠️ Demo — configura API_URL</span>';
+      '<span style="color:red">❌ Error API</span>';
   }
 }
 
