@@ -812,37 +812,90 @@ function toggleCart() {
 
 // ── CONFIRMAR PEDIDO ──────────────────────────────────────────
 async function confirmarPedido() {
-  if (!carrito.length) { toast("Tu carrito está vacío"); return; }
+
+  if (!carrito.length) {
+    toast("Tu carrito está vacío");
+    return;
+  }
+
   const nombre = document.getElementById("inp-nombre").value.trim();
   const tel    = document.getElementById("inp-tel").value.trim();
-  if (!nombre) { toast("Por favor ingresa tu nombre"); return; }
-  if (!tel)    { toast("Por favor ingresa tu número de WhatsApp"); return; }
+
+  if (!nombre) {
+    toast("Por favor ingresa tu nombre");
+    return;
+  }
+
+  if (!tel) {
+    toast("Por favor ingresa tu número de WhatsApp");
+    return;
+  }
 
   try {
-    await fetch(API_URL, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        action:"pedido", cliente:nombre, telefono:tel,
-        items:carrito.map(c=>({id:c.id,nombre:c.nombre,precio:c.precio,cantidad:c.qty}))
-      })
-    });
-  } catch(e) { console.warn("No se pudo guardar en Sheets:", e); }
 
-  const total = carrito.reduce((a,c) => a + c.precio * c.qty, 0);
-  const sym   = getSimbolo();
-  let msg = `🛒 *Nuevo Pedido — ShopNow*\n\n👤 *Cliente:* ${nombre}\n📞 *Teléfono:* ${tel}\n\n*Productos:*\n`;
-  carrito.forEach(c => { msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio*c.qty).toFixed(2)}\n`; });
-  msg += `\n💰 *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde ShopNow_`;
+   await fetch(API_URL, {
+  method: "POST",
+  body: JSON.stringify({
+    action: "pedido",
+    cliente: nombre,
+    telefono: tel,
+    items: carrito.map(c => ({
+      id: c.id,
+      nombre: c.nombre,
+      precio: c.precio,
+      cantidad: c.qty
+    }))
+  })
+});
 
-  window.open("https://wa.me/" + getWA() + "?text=" + encodeURIComponent(msg), "_blank");
+  } catch(e) {
+
+    console.warn("No se pudo guardar en Sheets:", e);
+
+  }
+
+  const total = carrito.reduce(
+    (a,c) => a + c.precio * c.qty,
+    0
+  );
+
+  const sym = getSimbolo();
+
+  let msg =
+`🛒 *Nuevo Pedido*
+
+👤 *Cliente:* ${nombre}
+📞 *Teléfono:* ${tel}
+
+*Productos:*
+`;
+
+  carrito.forEach(c => {
+    msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio*c.qty).toFixed(2)}\n`;
+  });
+
+  msg += `\n💰 *Total: ${sym}${total.toFixed(2)}*`;
+
+  window.open(
+    "https://wa.me/" +
+    getWA() +
+    "?text=" +
+    encodeURIComponent(msg),
+    "_blank"
+  );
 
   carrito = [];
-  saveCarrito(); renderCarrito(); renderGrid();
+
+  saveCarrito();
+  renderCarrito();
+  renderGrid();
+
   document.getElementById("inp-nombre").value = "";
   document.getElementById("inp-tel").value = "";
+
   toggleCart();
-  toast("✅ Pedido confirmado, abriendo WhatsApp…");
+
+  toast("✅ Pedido confirmado");
 }
 
 // ── ADMIN ─────────────────────────────────────────────────────
