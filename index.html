@@ -1231,16 +1231,19 @@ window.__wa_sending__ = true;
 
 setTimeout(() => {
 
-  if (isMobile) {
-    // 👉 fuerza app WhatsApp (sin pasar por api.whatsapp.com)
-    window.location.assign(url);
-  } else {
-    const w = window.open(url, "_blank");
+ if (isMobile) {
 
-    if (!w) {
-      window.location.assign(url);
-    }
+  // 👉 abre directo WhatsApp app o chat
+  window.location.href = whatsappURL;
+
+} else {
+
+  const w = window.open(whatsappURL, "_blank", "noopener,noreferrer");
+
+  if (!w) {
+    window.location.href = whatsappURL;
   }
+}
 
   // desbloquear después de 3s
   setTimeout(() => {
