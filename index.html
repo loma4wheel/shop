@@ -308,52 +308,57 @@ button{cursor:pointer;border:none;font-family:var(--font-body)}
   /* =====================================================
   boton RESPONSIVE MOVIL
 ===================================================== */
+#grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:20px;
+}
+
+/* CELULAR */
 @media (max-width:768px){
 
-  /* Precio más pequeño */
-  .prod-price{
-    font-size:.95rem;
+  #grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
   }
 
-  /* Botón agregar más compacto */
-  .btn-add{
-    padding:6px 10px;
-    font-size:.72rem;
+  .prod-card{
+    min-width:0;
   }
 
-  /* Controles + y - más pequeños */
-  .qty-btn{
-    width:24px;
-    height:24px;
-    font-size:.85rem;
-  }
-
-  .qty-num{
-    min-width:18px;
-    font-size:.75rem;
-  }
-
-  /* Footer del producto más compacto */
-  .prod-footer{
+  .prod-body{
+    padding:10px;
     gap:4px;
   }
 
-  /* Nombre producto */
   .prod-name{
-    font-size:.9rem;
+    font-size:.82rem;
+    line-height:1.2;
   }
 
-  /* Descripción */
   .prod-desc{
-    font-size:.75rem;
+    font-size:.68rem;
+    line-height:1.2;
   }
-}
 
-@media (max-width:768px){
+  .prod-price{
+    font-size:.85rem;
+  }
 
-  #cart-btn{
-    min-width:auto;
-    white-space:nowrap;
+  .btn-add{
+    font-size:.65rem;
+    padding:6px 8px;
+  }
+
+  .qty-btn{
+    width:22px;
+    height:22px;
+    font-size:.8rem;
+  }
+
+  .qty-num{
+    font-size:.75rem;
+    min-width:18px;
   }
 
 }
@@ -368,10 +373,48 @@ button{cursor:pointer;border:none;font-family:var(--font-body)}
   cursor:not-allowed;
 }
 
+#btn-whatsapp.loading{
+  background:#2563eb !important;
+  color:white;
+  pointer-events:none;
+  opacity:.95;
+}
+
+
+.img-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+  padding:20px;
+}
+
+.img-modal img{
+  max-width:95%;
+  max-height:90vh;
+  border-radius:12px;
+  object-fit:contain;
+}
+
+.img-modal.show{
+  display:flex;
+}
+
+.prod-img-wrap img{
+  cursor:pointer;
+}
+
 
   
 </style>
 
+  <!-- VISOR DE IMAGEN -->
+<div id="imgModal" class="img-modal" onclick="cerrarImagen()">
+  <img id="imgModalFoto" src="">
+</div>
   
 </head>
 <body>
@@ -672,8 +715,9 @@ function renderGrid() {
     const imgHtml = imgUrl
       ? `
         <img
-          src="${imgUrl}"
-          alt="${escHtml(p.nombre)}"
+        src="${imgUrl}"
+        alt="${escHtml(p.nombre)}"
+        onclick="ampliarImagen('${imgUrl}')"
           loading="lazy"
           referrerpolicy="no-referrer"
           onerror="this.outerHTML=imgPlaceholder()"
@@ -745,6 +789,18 @@ function imgPlaceholder() {
       <span>Sin imagen</span>
     </div>
   `;
+}
+
+function ampliarImagen(url){
+  const modal = document.getElementById("imgModal");
+  const foto  = document.getElementById("imgModalFoto");
+
+  foto.src = url;
+  modal.classList.add("show");
+}
+
+function cerrarImagen(){
+  document.getElementById("imgModal").classList.remove("show");
 }
 
 // ── ESCAPE HTML ───────────────────────────────────────────────
@@ -921,6 +977,12 @@ async function confirmarPedido() {
   const nombre = document.getElementById("inp-nombre").value.trim();
   const tel    = document.getElementById("inp-tel").value.trim();
 
+  const btn = document.getElementById("btn-whatsapp");
+
+btn.disabled = true;
+btn.innerHTML = "⏳ Procesando pedido...";
+btn.style.background = "#2563eb";
+
   if (!nombre) {
     toast("👤 Por favor ingresa tu nombre");
     return;
@@ -978,34 +1040,31 @@ async function confirmarPedido() {
 
   const sym = getSimbolo();
 
-  let msg =
-`🛒 *NUEVO PEDIDO*
+let msg =
+`🛍️ *NUEVO PEDIDO*
+
+━━━━━━━━━━━━━━
 
 👤 Cliente: ${nombre}
-📞 Teléfono: ${tel}
+📱 WhatsApp: ${tel}
 
 📦 *PRODUCTOS*
 
 `;
 
-  carrito.forEach(c => {
+carrito.forEach(c => {
 
-    msg +=
-`• ${c.nombre}
-   Cantidad: ${c.qty}
-   Subtotal: ${sym}${(c.precio * c.qty).toFixed(2)}
+  msg += `▪ ${c.nombre}\n`;
+  msg += `   ${c.qty} x ${sym}${c.precio.toFixed(2)} = ${sym}${(c.qty*c.precio).toFixed(2)}\n\n`;
 
-`;
+});
 
-  });
-
-  msg +=
+msg +=
 `━━━━━━━━━━━━━━
 
 💰 *TOTAL: ${sym}${total.toFixed(2)}*
 
-Gracias por tu compra 🙌
-Pedido realizado desde la tienda virtual.`;
+Gracias por su compra 🙌`;
 
   const whatsappURL =
     "https://wa.me/" +
