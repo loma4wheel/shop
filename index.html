@@ -723,18 +723,20 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 
-// ── CARGA INICIAL ─────────────────────────────────────────────
 async function cargarTodo() {
 
   try {
 
-    const res = (API_URL + "?t=" + Date.now());
+    const response = await fetch(API_URL + "?t=" + Date.now(), {
+      method: "GET",
+      cache: "no-cache"
+    });
 
-    if (!res.ok) {
-      throw new Error("HTTP " + res.status);
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
     }
 
-    const data = await res.json();
+    const data = await response.json();
 
     if (data.error) {
       throw new Error(data.error);
@@ -747,6 +749,7 @@ async function cargarTodo() {
     console.log("Productos cargados:", productos);
     console.log("Categorias cargadas:", categorias);
 
+    // 🔥 IMÁGENES
     productos.forEach(p => {
       p.imagen = normalizarImagenUrl(p.imagen);
     });
@@ -759,7 +762,7 @@ async function cargarTodo() {
 
     if (apiDot) {
       apiDot.innerHTML =
-        '<span style="color:var(--green)">✅ Conectado</span>';
+        '<span style="color:lime">✅ Conectado</span>';
     }
 
   } catch (e) {
@@ -779,9 +782,7 @@ async function cargarTodo() {
       apiDot.innerHTML =
         '<span style="color:red">❌ Error API</span>';
     }
-
   }
-
 }
   
 function aplicarConfig() {
