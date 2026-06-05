@@ -1198,13 +1198,13 @@ async function confirmarPedido() {
   });
   msg += `\n *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde Grey´s Colletion_`;
 
-  const whatsappURL =
+ const whatsappURL =
   "https://wa.me/" +
   getWA() +
   "?text=" +
   encodeURIComponent(msg);
 
-// 🔒 BLOQUE ANTI DOBLE CLICK GLOBAL
+// 🔒 anti doble click
 if (window.__wa_lock__) return;
 window.__wa_lock__ = true;
 
@@ -1227,34 +1227,23 @@ cerrarModalCheckout();
 
 toast("📲 Abriendo WhatsApp...");
 
-// detectar móvil REAL
-const isMobile = window.matchMedia("(max-width: 768px)").matches;
-
 setTimeout(() => {
 
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
   if (isMobile) {
-    // 👉 MÓVIL: intenta abrir app directa SIN romper la tienda antes
-    const link = document.createElement("a");
-    link.href = whatsappURL;
-    link.rel = "noopener";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
+    // 👉 MÓVIL: SOLO redirección directa (sin overlays raros)
+    window.location = whatsappURL;
   } else {
-    // 👉 PC: UNA sola pestaña
+    // 👉 PC: nueva pestaña única
     const w = window.open(whatsappURL, "_blank", "noopener,noreferrer");
-
-    if (!w) {
-      window.location.href = whatsappURL;
-    }
+    if (!w) window.location = whatsappURL;
   }
 
-  // desbloqueo
   setTimeout(() => {
     window.__wa_lock__ = false;
     if (btn) btn.disabled = false;
-  }, 2500);
+  }, 2000);
 
 }, 150);
 }
