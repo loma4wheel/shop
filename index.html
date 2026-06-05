@@ -723,13 +723,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 
+  // ── INCIIO DE TODO ───────────────────────────────────────────────
 async function cargarTodo() {
 
   try {
 
     const response = await fetch(API_URL + "?t=" + Date.now(), {
-      method: "GET",
-      cache: "no-cache"
+      method: "GET"
     });
 
     if (!response.ok) {
@@ -747,9 +747,7 @@ async function cargarTodo() {
     cfg        = data.config || {};
 
     console.log("Productos cargados:", productos);
-    console.log("Categorias cargadas:", categorias);
 
-    // 🔥 IMÁGENES
     productos.forEach(p => {
       p.imagen = normalizarImagenUrl(p.imagen);
     });
@@ -759,28 +757,17 @@ async function cargarTodo() {
     renderGrid();
 
     const apiDot = document.getElementById("api-dot");
-
     if (apiDot) {
-      apiDot.innerHTML =
-        '<span style="color:lime">✅ Conectado</span>';
+      apiDot.innerHTML = '<span style="color:green">✅ Conectado</span>';
     }
 
   } catch (e) {
 
     console.error("Error cargando API:", e);
 
-    productos = [];
-    categorias = [];
-    cfg = {};
-
-    renderCategorias();
-    renderGrid();
-
     const apiDot = document.getElementById("api-dot");
-
     if (apiDot) {
-      apiDot.innerHTML =
-        '<span style="color:red">❌ Error API</span>';
+      apiDot.innerHTML = '<span style="color:red">❌ Error API</span>';
     }
   }
 }
