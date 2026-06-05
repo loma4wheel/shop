@@ -1222,10 +1222,7 @@ cerrarModalCheckout();
 
 toast("✅ Pedido listo. Abriendo WhatsApp...");
 
-setTimeout(() => {
-
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
 const url = whatsappURL;
 
 // 🔒 evitar doble ejecución
