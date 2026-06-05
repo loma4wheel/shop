@@ -1214,21 +1214,13 @@ if (btn) {
   carrito.forEach(c => { msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio*c.qty).toFixed(2)}\n`; });
   msg += `\n *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde Grey´s Colletion_`;
 
+
   
-  
- const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-const url = whatsappURL;
-if (isMobile) {
-  // 👉 MÓVIL: abre app de WhatsApp directamente (más estable)
-  window.location.href = url;
-} else {
-  // 👉 PC: abre WhatsApp Web en nueva pestaña
-  const w = window.open(url, "_blank");
-  if (!w) {
-    // fallback si bloquea popup
-    window.location.href = url;
-  }
-}
+  const whatsappURL =
+  "https://wa.me/" +
+  getWA() +
+  "?text=" +
+  encodeURIComponent(msg);
 
   
 
@@ -1259,10 +1251,28 @@ a.target = "_blank";
 a.rel = "noopener noreferrer";
 a.click();
 
+  
+
 toggleCart();
 cerrarModalCheckout();
 
 }
+
+    
+ const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const url = whatsappURL;
+if (isMobile) {
+  // 👉 MÓVIL: abre app de WhatsApp directamente (más estable)
+  window.location.href = url;
+} else {
+  // 👉 PC: abre WhatsApp Web en nueva pestaña
+  const w = window.open(url, "_blank");
+  if (!w) {
+    // fallback si bloquea popup
+    window.location.href = url;
+  }
+}
+
 
   function abrirModalCheckout(){
 
@@ -1282,6 +1292,8 @@ function cerrarModalCheckout(){
     .getElementById("checkout-modal")
     .classList.remove("open");
 }
+
+  
 
 // ── ADMIN ─────────────────────────────────────────────────────
 async function agregarProducto() {
