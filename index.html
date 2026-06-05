@@ -1197,61 +1197,60 @@ async function confirmarPedido() {
     msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio * c.qty).toFixed(2)}\n`;
   });
   msg += `\n *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde Grey´s Colletion_`;
+const whatsappURL =
+  "https://wa.me/" +
+  getWA() +
+  "?text=" +
+  encodeURIComponent(msg);
 
-  const whatsappURL =
-    "https://wa.me/" +
-    getWA() +
-    "?text=" +
-    encodeURIComponent(msg);
+// 🔒 evitar doble envío (MUY IMPORTANTE)
+if (window.__sending_wa__) return;
+window.__sending_wa__ = true;
 
-  // limpiar UI
-  carrito = [];
-  saveCarrito();
-  renderCarrito();
-  renderGrid();
+// limpiar UI
+carrito = [];
+saveCarrito();
+renderCarrito();
+renderGrid();
 
-  document.getElementById("inp-nombre").value = "";
-  document.getElementById("inp-tel").value = "";
+document.getElementById("inp-nombre").value = "";
+document.getElementById("inp-tel").value = "";
 
-  if (btn) {
-    btn.innerHTML = "✅ Pedido listo";
-  }
+if (btn) {
+  btn.innerHTML = "✅ Pedido listo";
+  btn.disabled = true;
+}
 
 toggleCart();
 cerrarModalCheckout();
 
 toast("✅ Pedido listo. Abriendo WhatsApp...");
 
+// detectar móvil
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-const url = whatsappURL;
-
-// 🔒 evitar doble ejecución
-if (window.__wa_sending__) return;
-window.__wa_sending__ = true;
 
 setTimeout(() => {
 
-if (isMobile) {
+  if (isMobile) {
+    // 👉 móvil: abre app directamente (sin pestaña extra)
+    window.location.assign(whatsappURL);
+  } else {
+    // 👉 PC: una sola pestaña nueva
+    const w = window.open(whatsappURL, "_blank", "noopener,noreferrer");
 
-  // 👉 fuerza intent más directo
-  window.location.href = url;
-
-} else {
-
-  const w = window.open(url, "_blank", "noopener,noreferrer");
-
-  if (!w) {
-    window.location.href = url;
+    // fallback seguro
+    if (!w) {
+      window.location.assign(whatsappURL);
+    }
   }
-}
 
-  // desbloquear después de 3s
+  // desbloquear después
   setTimeout(() => {
-    window.__wa_sending__ = false;
-  }, 3000);
+    window.__sending_wa__ = false;
+    if (btn) btn.disabled = false;
+  }, 2000);
 
-}, 200);
-} 
+}, 300);
 
   function abrirModalCheckout(){
 
