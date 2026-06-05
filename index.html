@@ -262,17 +262,117 @@ button{cursor:pointer;border:none;font-family:var(--font-body)}
 #btn-add-prod:hover{opacity:.85}
 #api-status{font-size:.72rem;margin-top:12px;color:var(--muted);padding:6px 10px;background:var(--bg3);border-radius:var(--radius-sm);border:1px solid var(--border);}
 
-/* ── RESPONSIVE ── */
-@media(max-width:640px){
-  #topbar{padding:0 14px;gap:10px}
-  #logo{font-size:1.15rem}
-  #hero{padding:48px 16px 40px}
-  #main{padding:20px 14px 64px}
-  #grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-  .prod-img-wrap{height:160px}
-  #admin-panel{width:calc(100vw - 32px);right:16px}
+/* =====================================================
+   HEADER RESPONSIVE MOVIL
+===================================================== */
+@media (max-width:768px){
+
+  #topbar{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px;
+  }
+
+  /* Logo a la izquierda */
+  #logo{
+    order:1;
+    flex:1;
+    text-align:left;
+    font-size:1.05rem;
+  }
+
+  /* Carrito a la derecha */
+  #cart-btn{
+    order:2;
+    flex-shrink:0;
+    padding:8px 12px;
+    font-size:.8rem;
+  }
+
+  /* Buscador debajo ocupando todo el ancho */
+  #search-wrap{
+    order:3;
+    width:100%;
+    margin-top:4px;
+  }
+
+  #search-input{
+    width:100%;
+  }
+
 }
+
+  /* =====================================================
+  boton RESPONSIVE MOVIL
+===================================================== */
+@media (max-width:768px){
+
+  /* Precio más pequeño */
+  .prod-price{
+    font-size:.95rem;
+  }
+
+  /* Botón agregar más compacto */
+  .btn-add{
+    padding:6px 10px;
+    font-size:.72rem;
+  }
+
+  /* Controles + y - más pequeños */
+  .qty-btn{
+    width:24px;
+    height:24px;
+    font-size:.85rem;
+  }
+
+  .qty-num{
+    min-width:18px;
+    font-size:.75rem;
+  }
+
+  /* Footer del producto más compacto */
+  .prod-footer{
+    gap:4px;
+  }
+
+  /* Nombre producto */
+  .prod-name{
+    font-size:.9rem;
+  }
+
+  /* Descripción */
+  .prod-desc{
+    font-size:.75rem;
+  }
+}
+
+@media (max-width:768px){
+
+  #cart-btn{
+    min-width:auto;
+    white-space:nowrap;
+  }
+
+}
+
+/* Estado del botón WhatsApp */
+#btn-whatsapp{
+  transition:all .3s ease;
+}
+
+#btn-whatsapp:disabled{
+  opacity:.85;
+  cursor:not-allowed;
+}
+
+
+  
 </style>
+
+  
 </head>
 <body>
 
@@ -814,7 +914,7 @@ function toggleCart() {
 async function confirmarPedido() {
 
   if (!carrito.length) {
-    toast("Tu carrito está vacío");
+    toast("🛒 Tu carrito está vacío");
     return;
   }
 
@@ -822,67 +922,107 @@ async function confirmarPedido() {
   const tel    = document.getElementById("inp-tel").value.trim();
 
   if (!nombre) {
-    toast("Por favor ingresa tu nombre");
+    toast("👤 Por favor ingresa tu nombre");
     return;
   }
 
   if (!tel) {
-    toast("Por favor ingresa tu número de WhatsApp");
+    toast("📱 Por favor ingresa tu número de WhatsApp");
     return;
   }
 
+  const btn = document.getElementById("btn-whatsapp");
+
+  if (btn) {
+    btn.disabled = true;
+
+    btn.innerHTML = `
+      <span style="display:flex;align-items:center;justify-content:center;gap:8px">
+        ⏳ Procesando pedido...
+      </span>
+    `;
+  }
+
+  toast("⏳ Procesando tu pedido...");
+
   try {
 
-   await fetch(API_URL, {
-  method: "POST",
-  body: JSON.stringify({
-    action: "pedido",
-    cliente: nombre,
-    telefono: tel,
-    items: carrito.map(c => ({
-      id: c.id,
-      nombre: c.nombre,
-      precio: c.precio,
-      cantidad: c.qty
-    }))
-  })
-});
+    await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "pedido",
+        cliente: nombre,
+        telefono: tel,
+        items: carrito.map(c => ({
+          id: c.id,
+          nombre: c.nombre,
+          precio: c.precio,
+          cantidad: c.qty
+        }))
+      })
+    });
 
-  } catch(e) {
+  } catch (e) {
 
-    console.warn("No se pudo guardar en Sheets:", e);
+    console.warn(
+      "No se pudo guardar en Sheets:",
+      e
+    );
 
   }
 
   const total = carrito.reduce(
-    (a,c) => a + c.precio * c.qty,
+    (a, c) => a + c.precio * c.qty,
     0
   );
 
   const sym = getSimbolo();
 
   let msg =
-`🛒 *Nuevo Pedido*
+`🛒 *NUEVO PEDIDO*
 
-👤 *Cliente:* ${nombre}
-📞 *Teléfono:* ${tel}
+👤 Cliente: ${nombre}
+📞 Teléfono: ${tel}
 
-*Productos:*
+📦 *PRODUCTOS*
+
 `;
 
   carrito.forEach(c => {
-    msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio*c.qty).toFixed(2)}\n`;
+
+    msg +=
+`• ${c.nombre}
+   Cantidad: ${c.qty}
+   Subtotal: ${sym}${(c.precio * c.qty).toFixed(2)}
+
+`;
+
   });
 
-  msg += `\n💰 *Total: ${sym}${total.toFixed(2)}*`;
+  msg +=
+`━━━━━━━━━━━━━━
 
-  window.open(
+💰 *TOTAL: ${sym}${total.toFixed(2)}*
+
+Gracias por tu compra 🙌
+Pedido realizado desde la tienda virtual.`;
+
+  const whatsappURL =
     "https://wa.me/" +
     getWA() +
     "?text=" +
-    encodeURIComponent(msg),
-    "_blank"
-  );
+    encodeURIComponent(msg);
+
+  if (btn) {
+
+    btn.innerHTML = `
+      <span style="display:flex;align-items:center;justify-content:center;gap:8px">
+        ✅ Pedido listo
+      </span>
+    `;
+  }
+
+  toast("✅ Pedido listo. Abriendo WhatsApp...");
 
   carrito = [];
 
@@ -895,7 +1035,13 @@ async function confirmarPedido() {
 
   toggleCart();
 
-  toast("✅ Pedido confirmado");
+  setTimeout(() => {
+
+    // Compatible Android, iPhone y escritorio
+    window.location.href = whatsappURL;
+
+  }, 1200);
+
 }
 
 // ── ADMIN ─────────────────────────────────────────────────────
