@@ -1039,9 +1039,9 @@ btn.style.background = "#2563eb";
 
   const sym = getSimbolo();
 
- let msg = `🛒 *Nuevo Pedido — ShopNow*\n\n👤 *Cliente:* ${nombre}\n📞 *Teléfono:* ${tel}\n\n*Productos:*\n`;
+ let msg = ` *Nuevo Pedido*\n\n *Cliente:* ${nombre}\n *Teléfono:* ${tel}\n\n*Productos:*\n`;
   carrito.forEach(c => { msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio*c.qty).toFixed(2)}\n`; });
-  msg += `\n💰 *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde ShopNow_`;
+  msg += `\n *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde Grey´s Colletion_`;
 
   const whatsappURL =
     "https://wa.me/" +
