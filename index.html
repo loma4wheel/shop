@@ -1220,24 +1220,25 @@ async function confirmarPedido() {
     btn.innerHTML = "✅ Pedido listo";
   }
 
-  toast("✅ Pedido listo. Abriendo WhatsApp...");
+ toast("✅ Pedido listo. Abriendo WhatsApp...");
 
-  // ── WHATSAPP PRO FLOW ──
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const url = whatsappURL;
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+setTimeout(() => {
 
   if (isMobile) {
-    // móvil → app WhatsApp
-    window.location.href = url;
+    // MÓVIL: abrir app sin romper la tienda
+    window.location.href = whatsappURL;
   } else {
-    // PC → WhatsApp Web
-    const w = window.open(url, "_blank", "noopener,noreferrer");
+    // PC: nueva pestaña
+    const w = window.open(whatsappURL, "_blank", "noopener,noreferrer");
 
     if (!w) {
-      window.location.href = url;
+      window.location.href = whatsappURL;
     }
   }
-}
+
+}, 300);
 
 
   function abrirModalCheckout(){
