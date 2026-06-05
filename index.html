@@ -1213,29 +1213,24 @@ async function confirmarPedido() {
   document.getElementById("inp-nombre").value = "";
   document.getElementById("inp-tel").value = "";
 
-  toggleCart();
-  cerrarModalCheckout();
-
   if (btn) {
     btn.innerHTML = "✅ Pedido listo";
   }
 
- toast("✅ Pedido listo. Abriendo WhatsApp...");
+toggleCart();
+cerrarModalCheckout();
 
-const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+toast("✅ Pedido listo. Abriendo WhatsApp...");
 
 setTimeout(() => {
 
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
   if (isMobile) {
-    // MÓVIL: abrir app sin romper la tienda
     window.location.href = whatsappURL;
   } else {
-    // PC: nueva pestaña
     const w = window.open(whatsappURL, "_blank", "noopener,noreferrer");
-
-    if (!w) {
-      window.location.href = whatsappURL;
-    }
+    if (!w) window.location.href = whatsappURL;
   }
 
 }, 300);
