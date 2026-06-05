@@ -1241,11 +1241,11 @@ if (btn) {
   document.getElementById("inp-nombre").value = "";
   document.getElementById("inp-tel").value = "";
 
-  window.open(
-  whatsappURL,
-  "_blank",
-  "noopener,noreferrer"
-);
+const a = document.createElement("a");
+a.href = whatsappURL;
+a.target = "_blank";
+a.rel = "noopener noreferrer";
+a.click();
 
 toggleCart();
 cerrarModalCheckout();
