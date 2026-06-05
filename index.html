@@ -581,6 +581,41 @@ button{cursor:pointer;border:none;font-family:var(--font-body)}
   </footer>
 </aside>
 
+  <div id="checkout-modal" class="checkout-modal">
+
+  <div class="checkout-box">
+
+    <h3>Finalizar compra</h3>
+
+    <input
+      class="form-input"
+      id="inp-nombre"
+      placeholder="Tu nombre completo"
+      type="text"
+    >
+
+    <input
+      class="form-input"
+      id="inp-tel"
+      placeholder="Tu número WhatsApp"
+      type="tel"
+    >
+
+    <button id="btn-whatsapp" onclick="confirmarPedido()">
+      Confirmar por WhatsApp
+    </button>
+
+    <button
+      class="btn-cancelar"
+      onclick="cerrarModalCheckout()"
+    >
+      Cancelar
+    </button>
+
+  </div>
+
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════════
 //  CAMBIA SOLO ESTA LÍNEA — pega tu URL del Web App de Apps Script
@@ -868,42 +903,7 @@ function renderGrid() {
 }
 
 
-  <div id="checkout-modal" class="checkout-modal">
-
-  <div class="checkout-box">
-
-    <h3>Finalizar compra</h3>
-
-    <input
-      class="form-input"
-      id="inp-nombre"
-      placeholder="Tu nombre completo"
-      type="text"
-    >
-
-    <input
-      class="form-input"
-      id="inp-tel"
-      placeholder="Tu número WhatsApp"
-      type="tel"
-    >
-
-    <button id="btn-whatsapp" onclick="confirmarPedido()">
-      Confirmar por WhatsApp
-    </button>
-
-    <button
-      class="btn-cancelar"
-      onclick="cerrarModalCheckout()"
-    >
-      Cancelar
-    </button>
-
-  </div>
-
-</div>
-
-  
+   
 
 // ── PLACEHOLDER IMAGEN ────────────────────────────────────────
 function imgPlaceholder() {
@@ -1189,13 +1189,15 @@ btn.style.background = "#2563eb";
   saveCarrito();
   renderCarrito();
   renderGrid();
-  cerrarModalCheckout();
+
 
   document.getElementById("inp-nombre").value = "";
   document.getElementById("inp-tel").value = "";
 
   
   toggleCart();
+
+  cerrarModalCheckout();
 
   setTimeout(() => {
 
