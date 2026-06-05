@@ -1146,11 +1146,13 @@ async function confirmarPedido() {
   const nombre = document.getElementById("inp-nombre").value.trim();
   const tel    = document.getElementById("inp-tel").value.trim();
 
-  const btn = document.getElementById("btn-whatsapp");
+const btn = document.getElementById("btn-whatsapp");
 
-btn.disabled = true;
-btn.innerHTML = "⏳ Procesando pedido...";
-btn.style.background = "#2563eb";
+if (btn) {
+  btn.disabled = true;
+  btn.innerHTML = "⏳ Procesando pedido...";
+  btn.style.background = "#2563eb";
+}
 
   if (!nombre) {
     toast("👤 Por favor ingresa tu nombre");
@@ -1239,21 +1241,14 @@ btn.style.background = "#2563eb";
   document.getElementById("inp-nombre").value = "";
   document.getElementById("inp-tel").value = "";
 
-  
-  toggleCart();
-
-  cerrarModalCheckout();
-
-  setTimeout(() => {
-
-    // Compatible Android, iPhone y escritorio
   window.open(
   whatsappURL,
   "_blank",
   "noopener,noreferrer"
 );
 
-  }, 1200);
+toggleCart();
+cerrarModalCheckout();
 
 }
 
