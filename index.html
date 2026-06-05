@@ -1197,15 +1197,16 @@ async function confirmarPedido() {
     msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio * c.qty).toFixed(2)}\n`;
   });
   msg += `\n *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde Grey´s Colletion_`;
-const whatsappURL =
+
+  const whatsappURL =
   "https://wa.me/" +
   getWA() +
   "?text=" +
   encodeURIComponent(msg);
 
-// 🔒 evitar doble envío (MUY IMPORTANTE)
-if (window.__sending_wa__) return;
-window.__sending_wa__ = true;
+// 🔒 BLOQUE ANTI DOBLE CLICK GLOBAL
+if (window.__wa_lock__) return;
+window.__wa_lock__ = true;
 
 // limpiar UI
 carrito = [];
@@ -1224,33 +1225,38 @@ if (btn) {
 toggleCart();
 cerrarModalCheckout();
 
-toast("✅ Pedido listo. Abriendo WhatsApp...");
+toast("📲 Abriendo WhatsApp...");
 
-// detectar móvil
-const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+// detectar móvil REAL
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 setTimeout(() => {
 
   if (isMobile) {
-    // 👉 móvil: abre app directamente (sin pestaña extra)
-    window.location.assign(whatsappURL);
+    // 👉 MÓVIL: intenta abrir app directa SIN romper la tienda antes
+    const link = document.createElement("a");
+    link.href = whatsappURL;
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
   } else {
-    // 👉 PC: una sola pestaña nueva
+    // 👉 PC: UNA sola pestaña
     const w = window.open(whatsappURL, "_blank", "noopener,noreferrer");
 
-    // fallback seguro
     if (!w) {
-      window.location.assign(whatsappURL);
+      window.location.href = whatsappURL;
     }
   }
 
-  // desbloquear después
+  // desbloqueo
   setTimeout(() => {
-    window.__sending_wa__ = false;
+    window.__wa_lock__ = false;
     if (btn) btn.disabled = false;
-  }, 2000);
+  }, 2500);
 
-}, 300);
+}, 150);
 }
   
   function abrirModalCheckout(){
