@@ -1146,13 +1146,7 @@ async function confirmarPedido() {
   const nombre = document.getElementById("inp-nombre").value.trim();
   const tel    = document.getElementById("inp-tel").value.trim();
 
-const btn = document.getElementById("btn-whatsapp");
-
-if (btn) {
-  btn.disabled = true;
-  btn.innerHTML = "⏳ Procesando pedido...";
-  btn.style.background = "#2563eb";
-}
+  const btn = document.getElementById("btn-whatsapp");
 
   if (!nombre) {
     toast("👤 Por favor ingresa tu nombre");
@@ -1164,21 +1158,15 @@ if (btn) {
     return;
   }
 
-  
   if (btn) {
     btn.disabled = true;
-
-    btn.innerHTML = `
-      <span style="display:flex;align-items:center;justify-content:center;gap:8px">
-        ⏳ Procesando pedido...
-      </span>
-    `;
+    btn.innerHTML = "⏳ Procesando pedido...";
+    btn.style.background = "#2563eb";
   }
 
   toast("⏳ Procesando tu pedido...");
 
   try {
-
     await fetch(API_URL, {
       method: "POST",
       body: JSON.stringify({
@@ -1193,14 +1181,8 @@ if (btn) {
         }))
       })
     });
-
   } catch (e) {
-
-    console.warn(
-      "No se pudo guardar en Sheets:",
-      e
-    );
-
+    console.warn("No se pudo guardar en Sheets:", e);
   }
 
   const total = carrito.reduce(
@@ -1210,66 +1192,50 @@ if (btn) {
 
   const sym = getSimbolo();
 
- let msg = ` *Nuevo Pedido*\n\n *Cliente:* ${nombre}\n *Teléfono:* ${tel}\n\n*Productos:*\n`;
-  carrito.forEach(c => { msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio*c.qty).toFixed(2)}\n`; });
+  let msg = ` *Nuevo Pedido*\n\n *Cliente:* ${nombre}\n *Teléfono:* ${tel}\n\n*Productos:*\n`;
+  carrito.forEach(c => {
+    msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio * c.qty).toFixed(2)}\n`;
+  });
   msg += `\n *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde Grey´s Colletion_`;
 
-
-  
   const whatsappURL =
-  "https://wa.me/" +
-  getWA() +
-  "?text=" +
-  encodeURIComponent(msg);
+    "https://wa.me/" +
+    getWA() +
+    "?text=" +
+    encodeURIComponent(msg);
 
-  
-
-  if (btn) {
-
-    btn.innerHTML = `
-      <span style="display:flex;align-items:center;justify-content:center;gap:8px">
-        ✅ Pedido listo
-      </span>
-    `;
-  }
-
-  toast("✅ Pedido listo. Abriendo WhatsApp...");
-
+  // limpiar UI
   carrito = [];
-
   saveCarrito();
   renderCarrito();
   renderGrid();
 
-
   document.getElementById("inp-nombre").value = "";
   document.getElementById("inp-tel").value = "";
 
-const a = document.createElement("a");
-a.href = whatsappURL;
-a.target = "_blank";
-a.rel = "noopener noreferrer";
-a.click();
+  toggleCart();
+  cerrarModalCheckout();
 
-  
+  if (btn) {
+    btn.innerHTML = "✅ Pedido listo";
+  }
 
-toggleCart();
-cerrarModalCheckout();
+  toast("✅ Pedido listo. Abriendo WhatsApp...");
 
-}
+  // ── WHATSAPP PRO FLOW ──
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const url = whatsappURL;
 
-    
- const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-const url = whatsappURL;
-if (isMobile) {
-  // 👉 MÓVIL: abre app de WhatsApp directamente (más estable)
-  window.location.href = url;
-} else {
-  // 👉 PC: abre WhatsApp Web en nueva pestaña
-  const w = window.open(url, "_blank");
-  if (!w) {
-    // fallback si bloquea popup
+  if (isMobile) {
+    // móvil → app WhatsApp
     window.location.href = url;
+  } else {
+    // PC → WhatsApp Web
+    const w = window.open(url, "_blank", "noopener,noreferrer");
+
+    if (!w) {
+      window.location.href = url;
+    }
   }
 }
 
