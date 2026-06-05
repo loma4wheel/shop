@@ -1224,17 +1224,33 @@ toast("✅ Pedido listo. Abriendo WhatsApp...");
 
 setTimeout(() => {
 
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+const url = whatsappURL;
+
+// 🔒 evitar doble ejecución
+if (window.__wa_sending__) return;
+window.__wa_sending__ = true;
+
+setTimeout(() => {
 
   if (isMobile) {
-    window.location.href = whatsappURL;
+    // 👉 fuerza app WhatsApp (sin pasar por api.whatsapp.com)
+    window.location.assign(url);
   } else {
-    const w = window.open(whatsappURL, "_blank", "noopener,noreferrer");
-    if (!w) window.location.href = whatsappURL;
+    const w = window.open(url, "_blank");
+
+    if (!w) {
+      window.location.assign(url);
+    }
   }
 
-}, 300);
-}
+  // desbloquear después de 3s
+  setTimeout(() => {
+    window.__wa_sending__ = false;
+  }, 3000);
+
+}, 200);
 
   function abrirModalCheckout(){
 
