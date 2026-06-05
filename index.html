@@ -1231,17 +1231,17 @@ window.__wa_sending__ = true;
 
 setTimeout(() => {
 
- if (isMobile) {
+if (isMobile) {
 
-  // 👉 abre directo WhatsApp app o chat
-  window.location.href = whatsappURL;
+  // 👉 fuerza intent más directo
+  window.location.href = url;
 
 } else {
 
-  const w = window.open(whatsappURL, "_blank", "noopener,noreferrer");
+  const w = window.open(url, "_blank", "noopener,noreferrer");
 
   if (!w) {
-    window.location.href = whatsappURL;
+    window.location.href = url;
   }
 }
 
