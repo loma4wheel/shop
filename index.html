@@ -1039,31 +1039,9 @@ btn.style.background = "#2563eb";
 
   const sym = getSimbolo();
 
-let msg =
-`🛍️ *NUEVO PEDIDO*
-
-━━━━━━━━━━━━━━
-
-👤 Cliente: ${nombre}
-📱 WhatsApp: ${tel}
-
-📦 *PRODUCTOS*
-
-`;
-
-carrito.forEach(c => {
-
-  msg += `▪ ${c.nombre}\n`;
-  msg += `   ${c.qty} x ${sym}${c.precio.toFixed(2)} = ${sym}${(c.qty*c.precio).toFixed(2)}\n\n`;
-
-});
-
-msg +=
-`━━━━━━━━━━━━━━
-
-💰 *TOTAL: ${sym}${total.toFixed(2)}*
-
-Gracias por su compra 🙌`;
+ let msg = `🛒 *Nuevo Pedido — ShopNow*\n\n👤 *Cliente:* ${nombre}\n📞 *Teléfono:* ${tel}\n\n*Productos:*\n`;
+  carrito.forEach(c => { msg += `• ${c.nombre} x${c.qty} — ${sym}${(c.precio*c.qty).toFixed(2)}\n`; });
+  msg += `\n💰 *Total: ${sym}${total.toFixed(2)}*\n\n_Pedido realizado desde ShopNow_`;
 
   const whatsappURL =
     "https://wa.me/" +
